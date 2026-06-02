@@ -48,6 +48,17 @@ enum PHONGBAN {
   PHONG_KINH_DOANH
 }
 
+enum LOAI_NHOM_KH {
+  KHACH_LE
+  DAI_LY
+}
+
+enum PHAN_LOAI_CSKH {
+  CHUA_THAM_DINH
+  KHACH_TIEM_NANG
+  KHONG_PHU_HOP
+}
+
 model NGUOI_DUNG {
   ID_NGUOI_DUNG String @id @default(auto()) @map("_id") @db.ObjectId
   TAI_KHOAN     String @unique
@@ -81,6 +92,8 @@ model NHAN_VIEN {
   HINH_THUC       HINH_THUC_LAM_VIEC  @default(TOAN_THOI_GIAN)
   CHUC_VU         CHUC_VU?
   PHONGBAN        PHONGBAN?
+  USER_NAME       String?  @unique
+  PASSWORD        String?
   NGAY_THU_VIEC   DateTime?
   NGAY_CHINH_THUC DateTime?
   NGAY_NGHI_VIEC  DateTime?
@@ -88,4 +101,66 @@ model NHAN_VIEN {
   @@index([HO_VA_TEN])
   @@index([EMAIL])
   @@index([PHONGBAN])
+}
+
+model NHOM_KH {
+  ID_NHOM String       @id @default(auto()) @map("_id") @db.ObjectId
+  NHOM    LOAI_NHOM_KH @unique
+
+  DANH_SACH_KH CSKH[]
+}
+
+model NGUON_KH {
+  ID_NGUON String @id @map("_id")
+  NGUON    String @unique
+
+  DANH_SACH_KH CSKH[]
+}
+
+model NGUOI_GIOI_THIEU {
+  ID_NGT          String @id @map("_id")
+  TEN_NGT         String
+  SO_DT_NGT       String
+
+  DANH_SACH_KH_DUOC_GIOI_THIEU CSKH[]
+
+  @@unique([TEN_NGT, SO_DT_NGT])
+}
+
+model LY_DO_TU_CHOI {
+  ID_LY_DO String @id @map("_id")
+  LY_DO    String @unique
+
+  DANH_SACH_KH_TU_CHOI CSKH[]
+}
+
+model CSKH {
+  ID_CSKH String @id @default(auto()) @map("_id") @db.ObjectId
+
+  MA_KH          String   @unique
+  ID_NHOM        String   @db.ObjectId
+  ID_NGUON       String
+  ID_NGT         String?
+  ID_LY_DO_TC    String?
+  NGAY_GHI_NHAN  DateTime
+  TEN_KH         String
+  TEN_VT         String?
+  HINH_ANH       String?
+  DIEN_THOAI     String
+  EMAIL          String?
+  MST            String?
+  NGAY_THANH_LAP DateTime?
+  DIA_CHI        String?
+  SALES_PT       String?
+  PHAN_LOAI      PHAN_LOAI_CSKH @default(CHUA_THAM_DINH)
+  NV_CS          String?
+
+  NHOM_KH          NHOM_KH            @relation(fields: [ID_NHOM], references: [ID_NHOM])
+  NGUON_KH         NGUON_KH           @relation(fields: [ID_NGUON], references: [ID_NGUON])
+  NGUOI_GIOI_THIEU NGUOI_GIOI_THIEU?  @relation(fields: [ID_NGT], references: [ID_NGT])
+  LY_DO_TU_CHOI    LY_DO_TU_CHOI?     @relation(fields: [ID_LY_DO_TC], references: [ID_LY_DO])
+
+  @@index([TEN_KH])
+  @@index([DIEN_THOAI])
+  @@index([NGAY_GHI_NHAN])
 }

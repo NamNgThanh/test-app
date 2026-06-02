@@ -3,7 +3,7 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { NHAN_VIEN } from "@prisma/client";
+import { EmployeePublic } from "../action";
 import { Eye, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -13,8 +13,8 @@ export const ActionsCell = ({
   employee,
   onOpenDetail,
 }: {
-  employee: NHAN_VIEN,
-  onOpenDetail: (employee: NHAN_VIEN) => void,
+  employee: EmployeePublic,
+  onOpenDetail: (employee: EmployeePublic) => void,
 }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);

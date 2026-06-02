@@ -1,6 +1,6 @@
 "use client"
 
-import { NHAN_VIEN } from "@prisma/client";
+import { EmployeePublic } from "../action";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { getColumns } from "./columns";
@@ -9,7 +9,7 @@ import { UserRoundCheck, UserRoundX, Users } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table";
 
 interface EmployeeBoardProps {
-  initialData: NHAN_VIEN[];
+  initialData: EmployeePublic[];
   counts: Record<string, number>;
   currentStatus: string;
 }
@@ -22,7 +22,7 @@ export const EmployeeBoard = ({ initialData, counts, currentStatus }: EmployeeBo
   const [isPending, startTransition] = useTransition();
   const [activeStatus, setActiveStatus] = useState(currentStatus);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState<NHAN_VIEN | null>(null);
+  const [selectedEmployee, setSelectedEmployee] = useState<EmployeePublic | null>(null);
 
   useEffect(() => {
     setActiveStatus(currentStatus);

@@ -33,6 +33,7 @@ import { createNhanVienSchema, EmployeeFormData } from "../schema";
 import { GIOI_TINH, HINH_THUC_LAM_VIEC, TRANG_THAI_LAM_VIEC } from "@prisma/client";
 import { createEmployee, getNextEmployeeCode } from "../action";
 import { CHUC_VU_OPTIONS, PHONGBAN_OPTIONS } from "../constants";
+import { EmployeeAccountFields } from "./EmployeeAccountFields";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface AddEmployeeSheetProps {
@@ -56,6 +57,10 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
       CHUC_VU: "NHAN_VIEN" as const,
       PHONGBAN: "PHONG_KINH_DOANH" as const,
       NOI_CAP_CCCD: "Cục CS QLHC về TTXH",
+      TAO_TAI_KHOAN: false,
+      USER_NAME: "",
+      PASSWORD: "",
+      XAC_NHAN_MAT_KHAU: "",
     },
   });
 
@@ -65,6 +70,7 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
   const findFirstErrorTab = (errors: typeof form.formState.errors) => {
     const generalFields = ["MA_NV", "HO_VA_TEN", "EMAIL", "SO_DIEN_THOAI", "NGAY_SINH", "GIOI_TINH", "SO_CCCD", "NGAY_CAP_CCCD", "NOI_CAP_CCCD", "NGAY_HET_HAN_CCCD", "DIA_CHI_THUONG_TRU", "DIA_CHI_HIEN_TAI"];
     const jobFields = ["TRANG_THAI", "HINH_THUC", "CHUC_VU", "PHONGBAN", "NGAY_NHAN_VIEC"];
+    const accountFields = ["TAO_TAI_KHOAN", "USER_NAME", "PASSWORD", "XAC_NHAN_MAT_KHAU"];
 
     for (const field of generalFields) {
       if (errors[field as keyof typeof errors]) {
@@ -75,6 +81,12 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
     for (const field of jobFields) {
       if (errors[field as keyof typeof errors]) {
         return "job";
+      }
+    }
+
+    for (const field of accountFields) {
+      if (errors[field as keyof typeof errors]) {
+        return "account";
       }
     }
 
@@ -136,10 +148,11 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, (errors) => {
+              const tab = findFirstErrorTab(errors);
+              setActiveTab(tab);
               toast.error("Vui lòng điền đầy đủ thông tin bắt buộc!", {
                 description: "Có trường dữ liệu bị thiếu hoặc sai định dạng ở các tab.",
               });
-              console.log(errors);
             })}
             className="flex flex-col flex-1 overflow-hidden"
           >
@@ -149,9 +162,10 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
                 onValueChange={setActiveTab} 
                 className="w-full"
               >
-                <TabsList className="grid w-full grid-cols-2 mb-6 sticky top-0 z-10 bg-white shadow-sm border">
+                <TabsList className="grid w-full grid-cols-3 mb-6 sticky top-0 z-10 bg-white shadow-sm border">
                   <TabsTrigger value="general">Thông tin chung</TabsTrigger>
-                  <TabsTrigger value="job">Công việc & Tổ chức</TabsTrigger>
+                  <TabsTrigger value="job">Công việc</TabsTrigger>
+                  <TabsTrigger value="account">Tài khoản</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="general" className="space-y-6 bg-white p-4 rounded-lg border shadow-sm mt-0">
@@ -544,6 +558,10 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
                       )}
                     />
                   </div>
+                </TabsContent>
+
+                <TabsContent value="account" className="mt-0">
+                  <EmployeeAccountFields form={form} isDisabled={isPending} />
                 </TabsContent>
               </Tabs>
             </div>

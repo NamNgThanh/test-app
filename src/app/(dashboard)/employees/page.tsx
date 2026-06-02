@@ -1,7 +1,7 @@
 import { Users } from "lucide-react";
 import { PageSectionHeader } from "@/components/layouts/PageSectionHeader";
-import { NHAN_VIEN, TRANG_THAI_LAM_VIEC } from "@prisma/client";
-import { getAllEmployees } from "@/features/employees/action";
+import { TRANG_THAI_LAM_VIEC } from "@prisma/client";
+import { EmployeePublic, getAllEmployees } from "@/features/employees/action";
 import { EmployeeBoard } from "@/features/employees/components/EmployeeBoard";
 import { AddEmployeeButton } from "@/features/employees/components/AddEmployeeButton";
 
@@ -29,18 +29,19 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
 
   const counts = {
     TAT_CA: allEmployees.length,
-    DANG_LAM_VIEC: allEmployees.filter((e: NHAN_VIEN) => e.TRANG_THAI === "DANG_LAM_VIEC").length,
-    THU_VIEC: allEmployees.filter((e: NHAN_VIEN) => e.TRANG_THAI === "THU_VIEC").length,
-    NGHI_VIEC: allEmployees.filter((e: NHAN_VIEN) => e.TRANG_THAI === "NGHI_VIEC").length,
+    DANG_LAM_VIEC: allEmployees.filter((e: EmployeePublic) => e.TRANG_THAI === "DANG_LAM_VIEC").length,
+    THU_VIEC: allEmployees.filter((e: EmployeePublic) => e.TRANG_THAI === "THU_VIEC").length,
+    NGHI_VIEC: allEmployees.filter((e: EmployeePublic) => e.TRANG_THAI === "NGHI_VIEC").length,
   };
 
-  const filteredEmployees = allEmployees.filter((e: NHAN_VIEN) => {
+  const filteredEmployees = allEmployees.filter((e: EmployeePublic) => {
     const matchesStatus = currentStatus === "TAT_CA" || e.TRANG_THAI === currentStatus;
 
     const matchesSearch =
       e.HO_VA_TEN.toLowerCase().includes(currentSearch) ||
       e.EMAIL.toLowerCase().includes(currentSearch) ||
-      e.MA_NV.toLowerCase().includes(currentSearch);
+      e.MA_NV.toLowerCase().includes(currentSearch) ||
+      (e.USER_NAME?.toLowerCase().includes(currentSearch) ?? false);
 
     return matchesStatus && matchesSearch;
   })

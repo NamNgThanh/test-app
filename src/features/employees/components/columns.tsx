@@ -2,13 +2,14 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
-import { NHAN_VIEN } from "@prisma/client";
 import { ActionsCell } from "./ActionCell";
 import { CHUC_VU_LABELS, PHONGBAN_LABELS } from "../constants";
+import { EmployeePublic } from "../action";
+import { UserCheck, UserX } from "lucide-react";
 
 export const getColumns = (
-  onOpenDetail: (employee: NHAN_VIEN) => void,
-): ColumnDef<NHAN_VIEN>[] => [
+  onOpenDetail: (employee: EmployeePublic) => void,
+): ColumnDef<EmployeePublic>[] => [
     {
       accessorKey: "code",
       header: "Mã NV",
@@ -57,6 +58,31 @@ export const getColumns = (
           </span>
         </div>
       ),
+    },
+    {
+      accessorKey: "USER_NAME",
+      header: "Tài khoản",
+      cell: ({ row }) => {
+        const username = row.original.USER_NAME;
+        return (
+          <div className="flex justify-center">
+            {username ? (
+              <Badge
+                variant="outline"
+                className="gap-1 bg-emerald-50 text-emerald-800 border-emerald-200 font-mono text-xs"
+              >
+                <UserCheck className="h-3 w-3" />
+                {username}
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="gap-1 text-slate-500 border-slate-200 bg-slate-50">
+                <UserX className="h-3 w-3" />
+                Chưa cấp
+              </Badge>
+            )}
+          </div>
+        );
+      },
     },
     {
       accessorKey: "email",
