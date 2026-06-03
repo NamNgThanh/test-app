@@ -31,8 +31,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { createNhanVienSchema, EmployeeFormData } from "../schema";
 import { GIOI_TINH, HINH_THUC_LAM_VIEC, TRANG_THAI_LAM_VIEC } from "@prisma/client";
-import { createEmployee, getNextEmployeeCode } from "../action";
-import { CHUC_VU_OPTIONS, PHONGBAN_OPTIONS } from "../constants";
+import { createEmployee, getNextEmployeeCode, getEmployeeFormOptions } from "../action";
+import { GIOI_TINH_LABELS, TRANG_THAI_LAM_VIEC_LABELS, HINH_THUC_LAM_VIEC_LABELS } from "../constants";
 import { EmployeeAccountFields } from "./EmployeeAccountFields";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
@@ -47,6 +47,8 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
   const [isPending, startTransition] = useTransition();
 
   const [activeTab, setActiveTab] = useState("general");
+  const [chucVuOptions, setChucVuOptions] = useState<{value: string, label: string}[]>([]);
+  const [phongBanOptions, setPhongBanOptions] = useState<{value: string, label: string}[]>([]);
 
   const form = useForm<EmployeeFormData>({
     resolver: zodResolver(createNhanVienSchema),
@@ -54,8 +56,8 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
     defaultValues: {
       TRANG_THAI: "DANG_LAM_VIEC" as const,
       HINH_THUC: "TOAN_THOI_GIAN" as const,
-      CHUC_VU: "NHAN_VIEN" as const,
-      PHONGBAN: "PHONG_KINH_DOANH" as const,
+      CHUC_VU: "",
+      PHONGBAN: "",
       NOI_CAP_CCCD: "Cục CS QLHC về TTXH",
       TAO_TAI_KHOAN: false,
       USER_NAME: "",
@@ -96,17 +98,26 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
   useEffect(() => {
     if (!open) return;
 
-    const loadEmployeeCode = async () => {
+    const loadInitialData = async () => {
       try {
-        const code = await getNextEmployeeCode();
+        const [code, optionsRes] = await Promise.all([
+          getNextEmployeeCode(),
+          getEmployeeFormOptions()
+        ]);
+        
         form.setValue("MA_NV", code, { shouldValidate: true });
+        
+        if (optionsRes.success && optionsRes.data) {
+          setChucVuOptions(optionsRes.data.chucVuOptions);
+          setPhongBanOptions(optionsRes.data.phongBanOptions);
+        }
       } catch (error) {
-        console.error("Lỗi sinh mã nhân viên:", error);
+        console.error("Lỗi tải dữ liệu ban đầu:", error);
         toast.error("Không thể kết nối database. Kiểm tra DATABASE_URL trong file .env.");
       }
     };
 
-    loadEmployeeCode();
+    loadInitialData();
   }, [open, form]);
 
   useEffect(() => {
@@ -285,7 +296,7 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
                             </FormControl>
                             <SelectContent>
                               {Object.values(GIOI_TINH).map((value) => (
-                                <SelectItem key={value} value={value}>{value}</SelectItem>
+                                <SelectItem key={value} value={value}>{GIOI_TINH_LABELS[value]}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -442,7 +453,7 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
                             </FormControl>
                             <SelectContent>
                               {Object.values(TRANG_THAI_LAM_VIEC).map((value) => (
-                                <SelectItem key={value} value={value}>{value}</SelectItem>
+                                <SelectItem key={value} value={value}>{TRANG_THAI_LAM_VIEC_LABELS[value]}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -464,7 +475,7 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
                             </FormControl>
                             <SelectContent>
                               {Object.values(HINH_THUC_LAM_VIEC).map((value) => (
-                                <SelectItem key={value} value={value}>{value}</SelectItem>
+                                <SelectItem key={value} value={value}>{HINH_THUC_LAM_VIEC_LABELS[value]}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -486,7 +497,7 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {CHUC_VU_OPTIONS.map(({ value, label }) => (
+                              {chucVuOptions.map(({ value, label }) => (
                                 <SelectItem key={value} value={value}>
                                   {label}
                                 </SelectItem>
@@ -511,7 +522,7 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent>
-                              {PHONGBAN_OPTIONS.map(({ value, label }) => (
+                              {phongBanOptions.map(({ value, label }) => (
                                 <SelectItem key={value} value={value}>
                                   {label}
                                 </SelectItem>

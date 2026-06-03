@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 import { ActionsCell } from "./ActionCell";
-import { CHUC_VU_LABELS, PHONGBAN_LABELS } from "../constants";
+// Lables that are not dynamic
 import { EmployeePublic } from "../action";
 import { UserCheck, UserX } from "lucide-react";
 
@@ -103,7 +103,7 @@ export const getColumns = (
         return (
           <div className="flex justify-center">
             <span className="text-sm text-slate-700 text-center">
-              {chucVu ? CHUC_VU_LABELS[chucVu] : "—"}
+              {chucVu || "—"}
             </span>
           </div>
         );
@@ -117,7 +117,7 @@ export const getColumns = (
         return (
           <div className="flex justify-center">
             <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200">
-              {phongBan ? PHONGBAN_LABELS[phongBan] : "—"}
+              {phongBan || "—"}
             </Badge>
           </div>
         );

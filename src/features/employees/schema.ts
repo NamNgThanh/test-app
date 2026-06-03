@@ -49,11 +49,8 @@ export const createNhanVienSchema = z
     HINH_THUC: z.enum(["TOAN_THOI_GIAN", "BAN_THOI_GIAN", "THU_VIEC"], {
       message: "Loại nhân viên không hợp lệ",
     }),
-    CHUC_VU: z.enum(
-      ["NHAN_VIEN_KINH_DOANH", "TRUONG_PHONG_KINH_DOANH", "PHO_CHU_TICH", "NHAN_VIEN"],
-      { message: "Chức vụ không hợp lệ" }
-    ),
-    PHONGBAN: z.enum(["BAN_GIAM_DOC", "PHONG_KINH_DOANH"], { message: "Phòng ban không hợp lệ" }),
+    CHUC_VU: z.string().min(1, "Vui lòng chọn hoặc nhập chức vụ"),
+    PHONGBAN: z.string().min(1, "Vui lòng chọn hoặc nhập phòng ban"),
   })
   .merge(accountFieldsSchema)
   .superRefine((data, ctx) => {

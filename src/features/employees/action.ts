@@ -90,8 +90,27 @@ export const createEmployee = async (
   employeeData: EmployeeFormData
 ): Promise<ResultResponse<EmployeePublic>> => {
   try {
+    const payload = await buildCreatePayload(employeeData);
+
+    // Lưu danh mục mới nếu cần
+    if (payload.CHUC_VU) {
+      await prisma.dANH_MUC_CHUC_VU.upsert({
+        where: { TEN_CV: payload.CHUC_VU },
+        update: {},
+        create: { TEN_CV: payload.CHUC_VU },
+      });
+    }
+
+    if (payload.PHONGBAN) {
+      await prisma.dANH_MUC_PHONG_BAN.upsert({
+        where: { TEN_PB: payload.PHONGBAN },
+        update: {},
+        create: { TEN_PB: payload.PHONGBAN },
+      });
+    }
+
     const newEmployee = await prisma.nHAN_VIEN.create({
-      data: await buildCreatePayload(employeeData),
+      data: payload,
       omit: employeePublicSelect,
     });
     revalidatePath(EMPLOYEES_PATH);
@@ -118,5 +137,29 @@ export const deleteEmployee = async (id: string): Promise<ResultResponse<null>> 
     return createSuccessResponse(null);
   } catch (error) {
     return createErrorResponse("Lỗi khi xóa nhân viên", error);
+  }
+};
+
+export const getEmployeeFormOptions = async () => {
+  try {
+    const [chucVuList, phongBanList] = await Promise.all([
+      prisma.dANH_MUC_CHUC_VU.findMany({
+        where: { HIEU_LUC: true },
+        select: { ID_CV: true, TEN_CV: true },
+        orderBy: { TEN_CV: 'asc' }
+      }),
+      prisma.dANH_MUC_PHONG_BAN.findMany({
+        where: { HIEU_LUC: true },
+        select: { ID_PB: true, TEN_PB: true },
+        orderBy: { TEN_PB: 'asc' }
+      })
+    ]);
+
+    return createSuccessResponse({
+      chucVuOptions: chucVuList.map(item => ({ value: item.TEN_CV, label: item.TEN_CV })),
+      phongBanOptions: phongBanList.map(item => ({ value: item.TEN_PB, label: item.TEN_PB }))
+    });
+  } catch (error) {
+    return createErrorResponse("Lỗi khi lấy danh mục form nhân viên", error);
   }
 };
