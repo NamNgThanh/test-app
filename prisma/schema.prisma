@@ -142,6 +142,7 @@ model NHOM_KH {
 model NGUON_KH {
   ID_NGUON String @id @map("_id")
   NGUON    String @unique
+  HIEU_LUC Boolean @default(true)
 
   DANH_SACH_KH KHTN[]
 }

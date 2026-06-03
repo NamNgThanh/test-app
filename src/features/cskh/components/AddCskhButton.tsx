@@ -12,7 +12,7 @@ export function AddCskhButton() {
     <>
       <Button onClick={() => setOpen(true)} className="bg-blue-600 hover:bg-blue-700">
         <Plus className="mr-2 h-4 w-4" />
-        Thêm CSKH
+        Thêm KHTN
       </Button>
       <AddCskhSheet open={open} onOpenChange={setOpen} />
     </>

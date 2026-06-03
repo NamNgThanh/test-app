@@ -94,3 +94,51 @@ export async function deleteDanhMucPhongBan(id: string) {
     return createErrorResponse("Lỗi khi xoá danh mục phòng ban", error);
   }
 }
+
+// Nguồn khách hàng
+export async function getNguonKhachHang() {
+  try {
+    const data = await prisma.nGUON_KH.findMany({
+      orderBy: { NGUON: 'asc' }
+    });
+    return createSuccessResponse(data);
+  } catch (error) {
+    return createErrorResponse("Lỗi khi lấy danh mục nguồn khách hàng", error);
+  }
+}
+
+export async function addNguonKhachHang(nguon: string) {
+  try {
+    const count = await prisma.nGUON_KH.count();
+    const newId = `NGUON_${count + 1}_${Date.now()}`;
+    const data = await prisma.nGUON_KH.create({
+      data: { ID_NGUON: newId, NGUON: nguon.trim() }
+    });
+    return createSuccessResponse(data);
+  } catch (error) {
+    return createErrorResponse("Lỗi khi thêm danh mục nguồn (có thể đã tồn tại)", error);
+  }
+}
+
+export async function toggleNguonKhachHang(id: string, hieuLuc: boolean) {
+  try {
+    const data = await prisma.nGUON_KH.update({
+      where: { ID_NGUON: id },
+      data: { HIEU_LUC: hieuLuc }
+    });
+    return createSuccessResponse(data);
+  } catch (error) {
+    return createErrorResponse("Lỗi khi cập nhật trạng thái nguồn", error);
+  }
+}
+
+export async function deleteNguonKhachHang(id: string) {
+  try {
+    await prisma.nGUON_KH.delete({
+      where: { ID_NGUON: id }
+    });
+    return createSuccessResponse(null);
+  } catch (error) {
+    return createErrorResponse("Lỗi khi xoá danh mục nguồn", error);
+  }
+}

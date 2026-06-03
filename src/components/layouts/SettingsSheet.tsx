@@ -17,6 +17,10 @@ import {
   addDanhMucPhongBan,
   toggleDanhMucPhongBan,
   deleteDanhMucPhongBan,
+  getNguonKhachHang,
+  addNguonKhachHang,
+  toggleNguonKhachHang,
+  deleteNguonKhachHang,
 } from "@/app/actions/settings";
 import {
   AlertDialog,
@@ -52,15 +56,19 @@ export function SettingsSheet() {
 
         <div className="p-6">
           <Tabs defaultValue="chuc-vu" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="chuc-vu">Chức vụ</TabsTrigger>
               <TabsTrigger value="phong-ban">Phòng ban</TabsTrigger>
+              <TabsTrigger value="nguon-kh">Nguồn KH</TabsTrigger>
             </TabsList>
             <TabsContent value="chuc-vu" className="mt-0">
               <ChucVuManager />
             </TabsContent>
             <TabsContent value="phong-ban" className="mt-0">
               <PhongBanManager />
+            </TabsContent>
+            <TabsContent value="nguon-kh" className="mt-0">
+              <NguonKhManager />
             </TabsContent>
           </Tabs>
         </div>
@@ -304,6 +312,132 @@ function PhongBanManager() {
                       <AlertDialogFooter>
                         <AlertDialogCancel>Huỷ</AlertDialogCancel>
                         <AlertDialogAction onClick={() => handleDelete(item.ID_PB)} className="bg-red-600 hover:bg-red-700">Xoá</AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <div className="flex items-start gap-2 p-3 bg-blue-50/50 text-blue-800 rounded-lg text-xs border border-blue-100">
+        <Info className="h-4 w-4 shrink-0 mt-0.5" />
+        <p>Danh mục bị tắt hiển thị (tắt công tắc) sẽ không xuất hiện trong các tuỳ chọn để chọn thêm mới, nhưng dữ liệu cũ vẫn được giữ nguyên.</p>
+      </div>
+    </div>
+  );
+}
+
+function NguonKhManager() {
+  const [isPending, startTransition] = useTransition();
+  const [items, setItems] = useState<any[]>([]);
+  const [newValue, setNewValue] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  const fetchItems = async () => {
+    setLoading(true);
+    const res = await getNguonKhachHang();
+    if (res.success && res.data) {
+      setItems(res.data);
+    } else {
+      toast.error(res.message);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchItems();
+  }, []);
+
+  const handleAdd = async () => {
+    if (!newValue.trim()) return;
+    startTransition(async () => {
+      const res = await addNguonKhachHang(newValue);
+      if (res.success) {
+        toast.success("Thêm thành công");
+        setNewValue("");
+        fetchItems();
+      } else {
+        toast.error(res.message);
+      }
+    });
+  };
+
+  const handleToggle = async (id: string, checked: boolean) => {
+    startTransition(async () => {
+      const res = await toggleNguonKhachHang(id, checked);
+      if (res.success) {
+        setItems(prev => prev.map(item => item.ID_NGUON === id ? { ...item, HIEU_LUC: checked } : item));
+      } else {
+        toast.error(res.message);
+      }
+    });
+  };
+
+  const handleDelete = async (id: string) => {
+    startTransition(async () => {
+      const res = await deleteNguonKhachHang(id);
+      if (res.success) {
+        toast.success("Xoá thành công");
+        fetchItems();
+      } else {
+        toast.error(res.message);
+      }
+    });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2 bg-white p-2 rounded-lg border shadow-sm">
+        <Input 
+          placeholder="Nhập tên nguồn KH mới..." 
+          value={newValue} 
+          onChange={e => setNewValue(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && handleAdd()}
+          className="border-none focus-visible:ring-0 focus-visible:ring-offset-0 shadow-none"
+        />
+        <Button onClick={handleAdd} disabled={isPending || !newValue.trim()} size="sm" className="shrink-0 rounded-md">
+          {isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4 mr-1" />}
+          Thêm
+        </Button>
+      </div>
+
+      <div className="rounded-lg border bg-white overflow-hidden shadow-sm">
+        {loading ? (
+          <div className="p-8 flex justify-center"><Loader2 className="h-6 w-6 animate-spin text-slate-400" /></div>
+        ) : items.length === 0 ? (
+          <div className="p-8 text-center text-slate-500 text-sm">Chưa có dữ liệu</div>
+        ) : (
+          <ul className="divide-y">
+            {items.map(item => (
+              <li key={item.ID_NGUON} className="flex items-center justify-between p-4 hover:bg-slate-50 transition-colors">
+                <span className={`font-medium ${!item.HIEU_LUC ? 'text-slate-400 line-through' : 'text-slate-700'}`}>
+                  {item.NGUON}
+                </span>
+                <div className="flex items-center gap-3">
+                  <Switch 
+                    checked={item.HIEU_LUC} 
+                    onCheckedChange={(checked) => handleToggle(item.ID_NGUON, checked)}
+                    disabled={isPending}
+                    title="Ẩn/Hiện trong dropdown"
+                  />
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50" disabled={isPending}>
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Xác nhận xoá?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Bạn có chắc muốn xoá <b>{item.NGUON}</b> không? Hành động này không thể hoàn tác.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Huỷ</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleDelete(item.ID_NGUON)} className="bg-red-600 hover:bg-red-700">Xoá</AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
                   </AlertDialog>

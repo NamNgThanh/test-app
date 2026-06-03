@@ -154,6 +154,7 @@ export const getCSKHFormOptions = async (): Promise<ResultResponse<CskhFormOptio
     await Promise.all([ensureDefaultCustomerSources(), ensureDefaultRejectReasons()]);
     const [nguonKhOptions, nguoiGioiThieuOptions, lyDoTuChoiOptions] = await Promise.all([
       prisma.nGUON_KH.findMany({
+        where: { HIEU_LUC: { not: false } },
         select: { ID_NGUON: true, NGUON: true },
         orderBy: { ID_NGUON: "asc" },
       }),
