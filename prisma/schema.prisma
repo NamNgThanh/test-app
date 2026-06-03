@@ -72,10 +72,6 @@ enum LOAI_HINH_THUC {
   TRUC_TIEP
 }
 
-enum LOAI_KET_QUA {
-  DAT
-  TU_CHOI
-}
 
 enum ENUM_XEP_LOAI_CS {
   A
@@ -192,11 +188,27 @@ model KHTN {
   LY_DO_TU_CHOI    LY_DO_TU_CHOI?    @relation(fields: [ID_LY_DO_TC], references: [ID_LY_DO])
 
   NGUOI_LIEN_HE NGUOI_LIEN_HE[]
+  NGUOI_DAI_DIEN NGUOI_DAI_DIEN[]
   KH_CSKH       KH_CSKH[]
 
   @@index([TEN_KH])
   @@index([DIEN_THOAI])
   @@index([NGAY_GHI_NHAN])
+}
+
+
+model NGUOI_DAI_DIEN {
+  ID_DD          String    @id @default(auto()) @map("_id") @db.ObjectId
+  ID_KH          String
+  TEN_NGUOI_DD   String
+  CHUC_VU        String?
+  SDT            String
+  EMAIL          String?
+  NGAY_SINH      DateTime?
+  HIEU_LUC       Boolean   @default(true)
+
+  KHTN    KHTN      @relation(fields: [ID_KH], references: [MA_KH])
+  KH_CSKH KH_CSKH[]
 }
 
 model NGUOI_LIEN_HE {
@@ -221,8 +233,10 @@ model LOAI_CHAM_SOC {
 }
 
 model KQ_CS {
-  ID_KQ   String       @id @default(auto()) @map("_id") @db.ObjectId
-  KET_QUA LOAI_KET_QUA
+  ID_KQ      String    @id @default(auto()) @map("_id") @db.ObjectId
+  KET_QUA    String
+  HIEU_LUC   Boolean   @default(true)
+  IS_TU_CHOI Boolean   @default(false)
 
   KH_CSKH KH_CSKH[]
 }
@@ -231,6 +245,7 @@ model KH_CSKH {
   ID_CSKH        String         @id @default(auto()) @map("_id") @db.ObjectId
   ID_KH          String?
   ID_LH          String?        @db.ObjectId
+  ID_DD          String?        @db.ObjectId
   TG_TU          DateTime
   TG_DEN         DateTime
   ID_LCS         String         @db.ObjectId
@@ -250,6 +265,7 @@ model KH_CSKH {
 
   KHTN          KHTN?          @relation(fields: [ID_KH], references: [MA_KH])
   NGUOI_LIEN_HE NGUOI_LIEN_HE? @relation(fields: [ID_LH], references: [ID_LH])
+  NGUOI_DAI_DIEN NGUOI_DAI_DIEN? @relation(fields: [ID_DD], references: [ID_DD])
   LOAI_CHAM_SOC LOAI_CHAM_SOC  @relation(fields: [ID_LCS], references: [ID_LCS])
   KQ_CS         KQ_CS?         @relation(fields: [ID_KQ], references: [ID_KQ])
   LY_DO_TU_CHOI LY_DO_TU_CHOI? @relation(fields: [ID_LY_DO_TC], references: [ID_LY_DO])

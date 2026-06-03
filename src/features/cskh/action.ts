@@ -1,6 +1,6 @@
 "use server";
 
-import { LOAI_NHOM_KH, PHAN_LOAI_CSKH, Prisma, TRANG_THAI_CSKH, LOAI_KET_QUA, PHAN_LOAI_CHAM_SOC } from "@prisma/client";
+import { LOAI_NHOM_KH, PHAN_LOAI_CSKH, Prisma, TRANG_THAI_CSKH, PHAN_LOAI_CHAM_SOC } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { createErrorResponse, createSuccessResponse, ResultResponse } from "@/types/response";
@@ -24,9 +24,10 @@ export type LoaiChamSoc = { ID_LCS: string; LOAI_CS: string };
 export type KeHoachFormOptions = {
   khachHangOptions: { MA_KH: string; TEN_KH: string }[];
   nguoiLienHeOptions: { ID_LH: string; TENNGUOI_LIENHE: string; ID_KH: string }[];
+  nguoiDaiDienOptions: { ID_DD: string; TEN_NGUOI_DD: string; ID_KH: string }[];
   loaiChamSocOptions: LoaiChamSoc[];
   lyDoTuChoiOptions: CskhRejectReason[];
-  kqCsOptions: { ID_KQ: string; KET_QUA: string }[];
+  kqCsOptions: { ID_KQ: string; KET_QUA: string; IS_TU_CHOI: boolean }[];
 };
 
 export type CskhFormOptions = {
@@ -114,10 +115,13 @@ async function ensureDefaultLoaiChamSoc() {
 
 async function ensureDefaultKetQuaCs() {
   await Promise.all(
-    [LOAI_KET_QUA.DAT, LOAI_KET_QUA.TU_CHOI].map(async (kq) => {
-      const exists = await prisma.kQ_CS.findFirst({ where: { KET_QUA: kq } });
+    [
+      { KET_QUA: "Đạt", IS_TU_CHOI: false },
+      { KET_QUA: "Từ chối", IS_TU_CHOI: true }
+    ].map(async (kq) => {
+      const exists = await prisma.kQ_CS.findFirst({ where: { KET_QUA: kq.KET_QUA } });
       if (!exists) {
-        await prisma.kQ_CS.create({ data: { KET_QUA: kq } });
+        await prisma.kQ_CS.create({ data: { KET_QUA: kq.KET_QUA, IS_TU_CHOI: kq.IS_TU_CHOI, HIEU_LUC: true } });
       }
     })
   );
@@ -304,16 +308,22 @@ const LOAI_CS_LABELS: Record<string, string> = {
 export const getKeHoachFormOptions = async (): Promise<ResultResponse<KeHoachFormOptions>> => {
   try {
     await Promise.all([ensureDefaultLoaiChamSoc(), ensureDefaultKetQuaCs(), ensureDefaultRejectReasons()]);
-    const [khachHangOptions, nguoiLienHeOptions, loaiChamSocOptions, lyDoTuChoiOptions, kqCsOptions] = await Promise.all([
+    const [khachHangOptions, nguoiLienHeOptions,
+      nguoiDaiDienOptions, loaiChamSocOptions, lyDoTuChoiOptions, kqCsOptions] = await Promise.all([
       prisma.kHTN.findMany({ select: { MA_KH: true, TEN_KH: true } }),
       prisma.nGUOI_LIEN_HE.findMany({ select: { ID_LH: true, TENNGUOI_LIENHE: true, ID_KH: true } }),
+      prisma.nGUOI_DAI_DIEN.findMany({ select: { ID_DD: true, TEN_NGUOI_DD: true, ID_KH: true } }),
       prisma.lOAI_CHAM_SOC.findMany({ select: { ID_LCS: true, LOAI_CS: true } }),
       prisma.lY_DO_TU_CHOI.findMany({ select: { ID_LY_DO: true, LY_DO: true } }),
-      prisma.kQ_CS.findMany({ select: { ID_KQ: true, KET_QUA: true } }),
+      prisma.kQ_CS.findMany({ 
+        where: { HIEU_LUC: { not: false } },
+        select: { ID_KQ: true, KET_QUA: true, IS_TU_CHOI: true } 
+      }),
     ]);
     return createSuccessResponse({
       khachHangOptions,
       nguoiLienHeOptions,
+      nguoiDaiDienOptions,
       loaiChamSocOptions: loaiChamSocOptions.map((l) => ({ ID_LCS: l.ID_LCS, LOAI_CS: LOAI_CS_LABELS[l.LOAI_CS] || l.LOAI_CS })),
       lyDoTuChoiOptions,
       kqCsOptions,
@@ -352,3 +362,22 @@ export const createKeHoachCSKH = async (payload: KeHoachCSKHFormData, userId: st
     return createErrorResponse("Lỗi khi thêm kế hoạch CSKH", error);
   }
 };
+
+
+export async function createNguoiLienHe(data: { ID_KH: string; TENNGUOI_LIENHE: string; CHUC_VU?: string; SDT: string; EMAIL?: string; GHI_CHU?: string }) {
+  try {
+    const res = await prisma.nGUOI_LIEN_HE.create({ data: { ...data, HIEU_LUC: true } });
+    return createSuccessResponse(res);
+  } catch (error) {
+    return createErrorResponse("Lỗi khi thêm người liên hệ", error);
+  }
+}
+
+export async function createNguoiDaiDien(data: { ID_KH: string; TEN_NGUOI_DD: string; CHUC_VU?: string; SDT: string; EMAIL?: string; NGAY_SINH?: Date }) {
+  try {
+    const res = await prisma.nGUOI_DAI_DIEN.create({ data: { ...data, HIEU_LUC: true } });
+    return createSuccessResponse(res);
+  } catch (error) {
+    return createErrorResponse("Lỗi khi thêm người đại diện", error);
+  }
+}

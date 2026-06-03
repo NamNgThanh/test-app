@@ -142,3 +142,57 @@ export async function deleteNguonKhachHang(id: string) {
     return createErrorResponse("Lỗi khi xoá danh mục nguồn", error);
   }
 }
+
+// ==========================================
+// KẾT QUẢ CSKH (KQ_CS)
+// ==========================================
+
+export async function getKqCskh() {
+  try {
+    const data = await prisma.kQ_CS.findMany({
+      orderBy: { ID_KQ: "asc" }
+    });
+    return createSuccessResponse(data);
+  } catch (error) {
+    return createErrorResponse("Lỗi khi lấy danh mục kết quả CSKH", error);
+  }
+}
+
+export async function addKqCskh(ketQua: string, isTuChoi: boolean = false) {
+  try {
+    const newKq = await prisma.kQ_CS.create({
+      data: {
+        KET_QUA: ketQua,
+        IS_TU_CHOI: isTuChoi,
+        HIEU_LUC: true
+      }
+    });
+    return createSuccessResponse(newKq);
+  } catch (error) {
+    return createErrorResponse("Lỗi khi thêm kết quả CSKH", error);
+  }
+}
+
+export async function toggleKqCskh(id: string, currentStatus: boolean) {
+  try {
+    await prisma.kQ_CS.update({
+      where: { ID_KQ: id },
+      data: { HIEU_LUC: !currentStatus }
+    });
+    return createSuccessResponse(null);
+  } catch (error) {
+    return createErrorResponse("Lỗi khi cập nhật trạng thái kết quả CSKH", error);
+  }
+}
+
+export async function deleteKqCskh(id: string) {
+  try {
+    await prisma.kQ_CS.delete({
+      where: { ID_KQ: id }
+    });
+    return createSuccessResponse(null);
+  } catch (error) {
+    return createErrorResponse("Lỗi khi xoá kết quả CSKH", error);
+  }
+}
+

@@ -57,8 +57,8 @@ export const kehoachColumns: ColumnDef<KH_CSKHPublic>[] = [
     cell: ({ row }) => {
       if (!row.original.KQ_CS) return <span>—</span>;
       return (
-        <Badge variant={row.original.KQ_CS.KET_QUA === "DAT" ? "default" : "destructive"}>
-          {row.original.KQ_CS.KET_QUA === "DAT" ? "Đạt" : "Từ chối"}
+        <Badge variant={row.original.KQ_CS.IS_TU_CHOI ? "destructive" : "default"}>
+          {row.original.KQ_CS.KET_QUA}
         </Badge>
       );
     },

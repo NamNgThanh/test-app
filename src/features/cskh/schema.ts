@@ -43,6 +43,7 @@ export type KHTNFormData = z.infer<typeof createKHTNSchema>;
 export const createKeHoachCSKHSchema = z.object({
   ID_KH: z.string().optional(),
   ID_LH: z.string().optional(),
+  ID_DD: z.string().optional(),
   TG_TU: z.date({ message: "Vui lòng chọn thời gian bắt đầu" }),
   TG_DEN: z.date({ message: "Vui lòng chọn thời gian kết thúc" }),
   ID_LCS: z.string().min(1, "Vui lòng chọn loại chăm sóc"),
