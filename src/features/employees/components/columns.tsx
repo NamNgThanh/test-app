@@ -14,7 +14,7 @@ export const getColumns = (
       accessorKey: "code",
       header: "Mã NV",
       cell: ({ row }) => (
-        <div className="flex justify-center">
+        <div className="flex">
           <Badge variant="outline" className="font-mono">
             {row.original.MA_NV}
           </Badge>
@@ -34,7 +34,7 @@ export const getColumns = (
           .slice(0, 2);
 
         return (
-          <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
               <AvatarImage src={employee.HINH_ANH || undefined} alt={employee.HO_VA_TEN} />
               <AvatarFallback className="bg-blue-100 text-blue-700 font-semibold">
@@ -52,7 +52,7 @@ export const getColumns = (
       accessorKey: "phone",
       header: "SĐT",
       cell: ({ row }) => (
-        <div className="flex flex-col justify-center items-center">
+        <div className="flex flex-col">
           <span className="text-sm text-slate-900">
             {row.original.SO_DIEN_THOAI || 'N/A'}
           </span>
@@ -65,7 +65,7 @@ export const getColumns = (
       cell: ({ row }) => {
         const username = row.original.USER_NAME;
         return (
-          <div className="flex justify-center">
+          <div className="flex">
             {username ? (
               <Badge
                 variant="outline"
@@ -88,7 +88,7 @@ export const getColumns = (
       accessorKey: "email",
       header: "Email",
       cell: ({ row }) => (
-        <div className="flex flex-col justify-center items-center">
+        <div className="flex flex-col">
           <span className="text-sm text-slate-900">
             {row.original.EMAIL || 'N/A'}
           </span>
@@ -101,8 +101,8 @@ export const getColumns = (
       cell: ({ row }) => {
         const chucVu = row.original.CHUC_VU;
         return (
-          <div className="flex justify-center">
-            <span className="text-sm text-slate-700 text-center">
+          <div className="flex">
+            <span className="text-sm text-slate-700">
               {chucVu || "—"}
             </span>
           </div>
@@ -115,7 +115,7 @@ export const getColumns = (
       cell: ({ row }) => {
         const phongBan = row.original.PHONGBAN;
         return (
-          <div className="flex justify-center">
+          <div className="flex">
             <Badge variant="outline" className="bg-slate-50 text-slate-700 border-slate-200">
               {phongBan || "—"}
             </Badge>
@@ -127,7 +127,7 @@ export const getColumns = (
       accessorKey: "joinDate",
       header: "Ngày vào làm",
       cell: ({ row }) => (
-        <div className="flex justify-center">
+        <div className="flex">
           <span className="text-sm text-slate-700">
             {row.original.NGAY_CHINH_THUC ? formatDate(row.original.NGAY_CHINH_THUC) : row.original.NGAY_THU_VIEC ? formatDate(row.original.NGAY_THU_VIEC) : 'N/A'}
           </span>
@@ -160,7 +160,7 @@ export const getColumns = (
         };
 
         return (
-          <div className="flex justify-center">
+          <div className="flex">
             <Badge variant="outline" className={(config[type] || defaultConfig).className}>
               {(config[type] || defaultConfig).label}
             </Badge>
@@ -194,7 +194,7 @@ export const getColumns = (
         };
 
         return (
-          <div className="flex justify-center">
+          <div className="flex">
           <Badge variant="outline" className={(config[status] || defaultConfig).className}>
             {(config[status] || defaultConfig).label}
           </Badge>
