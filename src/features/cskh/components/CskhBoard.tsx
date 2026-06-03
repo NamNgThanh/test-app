@@ -1,11 +1,11 @@
 "use client";
 
 import { DataTable } from "@/components/ui/data-table";
-import { CSKHPublic } from "../action";
+import { KHTNPublic } from "../action";
 import { cskhColumns } from "./columns";
 
 interface CskhBoardProps {
-  data: CSKHPublic[];
+  data: KHTNPublic[];
 }
 
 export function CskhBoard({ data }: CskhBoardProps) {

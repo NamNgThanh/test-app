@@ -59,11 +59,40 @@ enum PHAN_LOAI_CSKH {
   KHONG_PHU_HOP
 }
 
+enum PHAN_LOAI_CHAM_SOC {
+  TU_VAN_KHAO_SAT
+  LAM_RO_BAO_GIA_HOP_DONG
+  TRIEN_KHAI_THEO_DOI
+  XU_LY_CONG_NO
+  HAU_MAI_CHAM_SOC_DINH_KY
+}
+
+enum LOAI_HINH_THUC {
+  ONLINE
+  TRUC_TIEP
+}
+
+enum LOAI_KET_QUA {
+  DAT
+  TU_CHOI
+}
+
+enum ENUM_XEP_LOAI_CS {
+  A
+  D
+}
+
+enum TRANG_THAI_CSKH {
+  HOAN_THANH
+  CHO_BAO_CAO
+  HUY
+}
+
 model NGUOI_DUNG {
   ID_NGUOI_DUNG String @id @default(auto()) @map("_id") @db.ObjectId
   TAI_KHOAN     String @unique
   MAT_KHAU      String
-  QUYEN         QUYEN @default(USER)
+  QUYEN         QUYEN  @default(USER)
 }
 
 model NHAN_VIEN {
@@ -92,7 +121,7 @@ model NHAN_VIEN {
   HINH_THUC       HINH_THUC_LAM_VIEC  @default(TOAN_THOI_GIAN)
   CHUC_VU         CHUC_VU?
   PHONGBAN        PHONGBAN?
-  USER_NAME       String?  @unique
+  USER_NAME       String?             @unique
   PASSWORD        String?
   NGAY_THU_VIEC   DateTime?
   NGAY_CHINH_THUC DateTime?
@@ -107,22 +136,22 @@ model NHOM_KH {
   ID_NHOM String       @id @default(auto()) @map("_id") @db.ObjectId
   NHOM    LOAI_NHOM_KH @unique
 
-  DANH_SACH_KH CSKH[]
+  DANH_SACH_KH KHTN[]
 }
 
 model NGUON_KH {
   ID_NGUON String @id @map("_id")
   NGUON    String @unique
 
-  DANH_SACH_KH CSKH[]
+  DANH_SACH_KH KHTN[]
 }
 
 model NGUOI_GIOI_THIEU {
-  ID_NGT          String @id @map("_id")
-  TEN_NGT         String
-  SO_DT_NGT       String
+  ID_NGT    String @id @map("_id")
+  TEN_NGT   String
+  SO_DT_NGT String
 
-  DANH_SACH_KH_DUOC_GIOI_THIEU CSKH[]
+  DANH_SACH_KH_DUOC_GIOI_THIEU KHTN[]
 
   @@unique([TEN_NGT, SO_DT_NGT])
 }
@@ -131,14 +160,15 @@ model LY_DO_TU_CHOI {
   ID_LY_DO String @id @map("_id")
   LY_DO    String @unique
 
-  DANH_SACH_KH_TU_CHOI CSKH[]
+  DANH_SACH_KH_TU_CHOI KHTN[]
+  KH_CSKH              KH_CSKH[]
 }
 
-model CSKH {
-  ID_CSKH String @id @default(auto()) @map("_id") @db.ObjectId
+model KHTN {
+  ID_KHTN String @id @default(auto()) @map("_id") @db.ObjectId
 
-  MA_KH          String   @unique
-  ID_NHOM        String   @db.ObjectId
+  MA_KH          String         @unique
+  ID_NHOM        String         @db.ObjectId
   ID_NGUON       String
   ID_NGT         String?
   ID_LY_DO_TC    String?
@@ -155,12 +185,71 @@ model CSKH {
   PHAN_LOAI      PHAN_LOAI_CSKH @default(CHUA_THAM_DINH)
   NV_CS          String?
 
-  NHOM_KH          NHOM_KH            @relation(fields: [ID_NHOM], references: [ID_NHOM])
-  NGUON_KH         NGUON_KH           @relation(fields: [ID_NGUON], references: [ID_NGUON])
-  NGUOI_GIOI_THIEU NGUOI_GIOI_THIEU?  @relation(fields: [ID_NGT], references: [ID_NGT])
-  LY_DO_TU_CHOI    LY_DO_TU_CHOI?     @relation(fields: [ID_LY_DO_TC], references: [ID_LY_DO])
+  NHOM_KH          NHOM_KH           @relation(fields: [ID_NHOM], references: [ID_NHOM])
+  NGUON_KH         NGUON_KH          @relation(fields: [ID_NGUON], references: [ID_NGUON])
+  NGUOI_GIOI_THIEU NGUOI_GIOI_THIEU? @relation(fields: [ID_NGT], references: [ID_NGT])
+  LY_DO_TU_CHOI    LY_DO_TU_CHOI?    @relation(fields: [ID_LY_DO_TC], references: [ID_LY_DO])
+
+  NGUOI_LIEN_HE NGUOI_LIEN_HE[]
+  KH_CSKH       KH_CSKH[]
 
   @@index([TEN_KH])
   @@index([DIEN_THOAI])
   @@index([NGAY_GHI_NHAN])
+}
+
+model NGUOI_LIEN_HE {
+  ID_LH           String  @id @default(auto()) @map("_id") @db.ObjectId
+  ID_KH           String
+  TENNGUOI_LIENHE String
+  CHUC_VU         String?
+  SDT             String
+  EMAIL           String?
+  GHI_CHU         String?
+  HIEU_LUC        Boolean @default(true)
+
+  KHTN    KHTN      @relation(fields: [ID_KH], references: [MA_KH])
+  KH_CSKH KH_CSKH[]
+}
+
+model LOAI_CHAM_SOC {
+  ID_LCS  String             @id @default(auto()) @map("_id") @db.ObjectId
+  LOAI_CS PHAN_LOAI_CHAM_SOC
+
+  KH_CSKH KH_CSKH[]
+}
+
+model KQ_CS {
+  ID_KQ   String       @id @default(auto()) @map("_id") @db.ObjectId
+  KET_QUA LOAI_KET_QUA
+
+  KH_CSKH KH_CSKH[]
+}
+
+model KH_CSKH {
+  ID_CSKH        String         @id @default(auto()) @map("_id") @db.ObjectId
+  ID_KH          String?
+  ID_LH          String?        @db.ObjectId
+  TG_TU          DateTime
+  TG_DEN         DateTime
+  ID_LCS         String         @db.ObjectId
+  HINH_THUC      LOAI_HINH_THUC
+  DIA_DIEM       String?
+  NGUOI_CHAM_SOC String?
+
+  NGAY_CS_TT      DateTime?
+  HINH_ANH        String?
+  FILE            String?
+  ID_KQ           String?           @db.ObjectId
+  XEP_LOAI_CS     ENUM_XEP_LOAI_CS?
+  NOI_DUNG_TD     String?
+  ID_LY_DO_TC     String?
+  GHI_CHU_NHU_CAU String?
+  TRANG_THAI      TRANG_THAI_CSKH   @default(CHO_BAO_CAO)
+
+  KHTN          KHTN?          @relation(fields: [ID_KH], references: [MA_KH])
+  NGUOI_LIEN_HE NGUOI_LIEN_HE? @relation(fields: [ID_LH], references: [ID_LH])
+  LOAI_CHAM_SOC LOAI_CHAM_SOC  @relation(fields: [ID_LCS], references: [ID_LCS])
+  KQ_CS         KQ_CS?         @relation(fields: [ID_KQ], references: [ID_KQ])
+  LY_DO_TU_CHOI LY_DO_TU_CHOI? @relation(fields: [ID_LY_DO_TC], references: [ID_LY_DO])
 }

@@ -8,7 +8,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import {
-  createCSKH,
+  createKHTN,
   createNguoiGioiThieu,
   CskhReferrer,
   CskhRejectReason,
@@ -45,7 +45,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { NHOM_KH_OPTIONS } from "../constants";
-import { createCSKHSchema, CSKHFormData } from "../schema";
+import { createKHTNSchema, KHTNFormData } from "../schema";
 
 interface AddCskhSheetProps {
   open: boolean;
@@ -63,8 +63,8 @@ export function AddCskhSheet({ open, onOpenChange }: AddCskhSheetProps) {
   const [newReferrerName, setNewReferrerName] = useState("");
   const [newReferrerPhone, setNewReferrerPhone] = useState("");
 
-  const form = useForm<CSKHFormData>({
-    resolver: zodResolver(createCSKHSchema),
+  const form = useForm<KHTNFormData>({
+    resolver: zodResolver(createKHTNSchema),
     defaultValues: {
       NHOM: "KHACH_LE",
       ID_NGUON: "",
@@ -115,7 +115,7 @@ export function AddCskhSheet({ open, onOpenChange }: AddCskhSheetProps) {
 
   useEffect(() => {
     if (!isReferralSource) {
-      form.setValue("ID_NGT", "", { shouldValidate: true });
+      // Allow user to select a referrer even if not CTV, but don't force clear it.
     }
   }, [isReferralSource, form]);
 
@@ -125,9 +125,12 @@ export function AddCskhSheet({ open, onOpenChange }: AddCskhSheetProps) {
     }
   }, [isKhongPhuHop, form]);
 
-  const onSubmit = (data: CSKHFormData) => {
+  const onSubmit = (data: KHTNFormData) => {
     startTransition(async () => {
-      const result = await createCSKH(data);
+      const submitData = { ...data };
+      if (submitData.ID_NGT === "none") submitData.ID_NGT = "";
+
+      const result = await createKHTN(submitData);
       if (!result.success) {
         toast.error(result.error);
         return;
@@ -251,7 +254,7 @@ export function AddCskhSheet({ open, onOpenChange }: AddCskhSheetProps) {
                     className="w-full"
                     onClick={() => form.setValue("PHAN_LOAI", "KHACH_TIEM_NANG", { shouldValidate: true })}
                   >
-                    Thẩm định → Khách tiềm năng
+                    Thẩm định
                   </Button>
                 </div>
               </div>
@@ -399,9 +402,9 @@ export function AddCskhSheet({ open, onOpenChange }: AddCskhSheetProps) {
                     <FormItem>
                       <FormLabel>MST</FormLabel>
                       <FormControl>
-                        <Input 
-                          placeholder="Mã số thuế" 
-                          {...field} 
+                        <Input
+                          placeholder="Mã số thuế"
+                          {...field}
                           onBlur={async (e) => {
                             field.onBlur?.();
                             const taxCode = e.target.value?.trim();
@@ -511,45 +514,44 @@ export function AddCskhSheet({ open, onOpenChange }: AddCskhSheetProps) {
                 <div />
               </div>
 
-              {isReferralSource && (
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField
-                    control={form.control}
-                    name="ID_NGT"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Người giới thiệu *</FormLabel>
-                        <Select onValueChange={field.onChange} value={field.value}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Chọn người giới thiệu" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {nguoiGioiThieuOptions.map((item) => (
-                              <SelectItem key={item.ID_NGT} value={item.ID_NGT}>
-                                {item.TEN_NGT} - {item.SO_DT_NGT}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <div className="flex items-end">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => setIsReferrerModalOpen(true)}
-                    >
-                      <Plus className="mr-2 h-4 w-4" />
-                      Thêm người giới thiệu
-                    </Button>
-                  </div>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="ID_NGT"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Người giới thiệu {isReferralSource && "*"}</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Chọn người giới thiệu" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="none">Không chọn</SelectItem>
+                          {nguoiGioiThieuOptions.map((item) => (
+                            <SelectItem key={item.ID_NGT} value={item.ID_NGT}>
+                              {item.TEN_NGT} - {item.SO_DT_NGT}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <div className="flex items-end">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => setIsReferrerModalOpen(true)}
+                  >
+                    <Plus className="mr-2 h-4 w-4" />
+                    Thêm người giới thiệu
+                  </Button>
                 </div>
-              )}
+              </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <FormField

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { UseFormReturn } from "react-hook-form";
+import { UseFormReturn, useWatch } from "react-hook-form";
 import {
   FormControl,
   FormDescription,
@@ -25,8 +25,15 @@ export function EmployeeAccountFields({ form, isDisabled }: EmployeeAccountField
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const taoTaiKhoan = form.watch("TAO_TAI_KHOAN");
-  const maNv = form.watch("MA_NV");
+  const taoTaiKhoan = useWatch({
+    control: form.control,
+    name: "TAO_TAI_KHOAN",
+  });
+  
+  const maNv = useWatch({
+    control: form.control,
+    name: "MA_NV",
+  });
 
   const suggestUsername = () => {
     if (!maNv) return;
@@ -81,7 +88,7 @@ export function EmployeeAccountFields({ form, isDisabled }: EmployeeAccountField
       />
 
       {taoTaiKhoan && (
-        <div className="space-y-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="space-y-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
           <FormField
             control={form.control}
             name="USER_NAME"

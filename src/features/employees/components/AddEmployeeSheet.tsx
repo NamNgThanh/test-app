@@ -137,7 +137,7 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-200 p-0 flex flex-col max-h-[90vh] bg-slate-50 overflow-hidden">
+      <DialogContent className="sm:max-w-[800px] p-0 flex flex-col h-[90vh] bg-slate-50 overflow-hidden">
         <DialogHeader className="px-6 py-4 bg-white border-b shrink-0">
           <DialogTitle>Thêm nhân viên mới</DialogTitle>
           <DialogDescription>
@@ -354,7 +354,7 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
                         <FormItem>
                           <FormLabel>Nơi cấp CCCD <span className="text-destructive">*</span></FormLabel>
                           <FormControl>
-                            <Input defaultValue="Cục CS QLHC về TTXH" placeholder="Nhập nơi cấp CCCD" {...field} />
+                            <Input placeholder="Nhập nơi cấp CCCD" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

@@ -1,11 +1,11 @@
 import z from "zod";
 
-export const createCSKHSchema = z.object({
+export const createKHTNSchema = z.object({
   MA_KH: z.string().min(1, "Mã khách hàng không được để trống"),
   NHOM: z.enum(["KHACH_LE", "DAI_LY"], { message: "Nhóm khách hàng không hợp lệ" }),
   ID_NGUON: z.string().min(1, "Vui lòng chọn nguồn"),
   ID_NGT: z.string().optional(),
-  PHAN_LOAI: z.enum(["CHUA_THAM_DINH", "KHACH_TIEM_NANG", "KHONG_PHU_HOP"]).default("CHUA_THAM_DINH"),
+  PHAN_LOAI: z.enum(["CHUA_THAM_DINH", "KHACH_TIEM_NANG", "KHONG_PHU_HOP"]),
   ID_LY_DO_TC: z.string().optional(),
   NGAY_GHI_NHAN: z.date({ message: "Vui lòng chọn ngày ghi nhận" }),
   TEN_KH: z.string().min(1, "Tên khách hàng không được để trống"),
@@ -38,4 +38,24 @@ export const createCSKHSchema = z.object({
   }
 });
 
-export type CSKHFormData = z.infer<typeof createCSKHSchema>;
+export type KHTNFormData = z.infer<typeof createKHTNSchema>;
+
+export const createKeHoachCSKHSchema = z.object({
+  ID_KH: z.string().optional(),
+  ID_LH: z.string().optional(),
+  TG_TU: z.date({ message: "Vui lòng chọn thời gian bắt đầu" }),
+  TG_DEN: z.date({ message: "Vui lòng chọn thời gian kết thúc" }),
+  ID_LCS: z.string().min(1, "Vui lòng chọn loại chăm sóc"),
+  HINH_THUC: z.enum(["ONLINE", "TRUC_TIEP"], { message: "Hình thức không hợp lệ" }),
+  DIA_DIEM: z.string().optional(),
+  NGUOI_CHAM_SOC: z.string().optional(),
+  NOI_DUNG_TD: z.string().optional(),
+  GHI_CHU_NHU_CAU: z.string().optional(),
+  NGAY_CS_TT: z.date().optional(),
+  ID_KQ: z.string().optional(),
+  XEP_LOAI_CS: z.enum(["A", "D"]).optional(),
+  ID_LY_DO_TC: z.string().optional(),
+  TRANG_THAI: z.enum(["HOAN_THANH", "CHO_BAO_CAO", "HUY"]),
+});
+
+export type KeHoachCSKHFormData = z.infer<typeof createKeHoachCSKHSchema>;

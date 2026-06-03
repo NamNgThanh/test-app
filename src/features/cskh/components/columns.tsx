@@ -1,10 +1,10 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
-import { CSKHPublic } from "../action";
+import { KHTNPublic } from "../action";
 import { NHOM_KH_LABELS } from "../constants";
 
-export const cskhColumns: ColumnDef<CSKHPublic>[] = [
+export const cskhColumns: ColumnDef<KHTNPublic>[] = [
   {
     accessorKey: "MA_KH",
     header: "Mã KH",
