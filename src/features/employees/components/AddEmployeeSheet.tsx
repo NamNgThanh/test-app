@@ -47,8 +47,8 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
   const [isPending, startTransition] = useTransition();
 
   const [activeTab, setActiveTab] = useState("general");
-  const [chucVuOptions, setChucVuOptions] = useState<{value: string, label: string}[]>([]);
-  const [phongBanOptions, setPhongBanOptions] = useState<{value: string, label: string}[]>([]);
+  const [chucVuOptions, setChucVuOptions] = useState<{ value: string, label: string }[]>([]);
+  const [phongBanOptions, setPhongBanOptions] = useState<{ value: string, label: string }[]>([]);
 
   const form = useForm<EmployeeFormData>({
     resolver: zodResolver(createNhanVienSchema),
@@ -104,12 +104,12 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
           getNextEmployeeCode(),
           getEmployeeFormOptions()
         ]);
-        
+
         form.setValue("MA_NV", code, { shouldValidate: true });
-        
+
         if (optionsRes.success && optionsRes.data) {
-          setChucVuOptions(optionsRes.data.chucVuOptions);
-          setPhongBanOptions(optionsRes.data.phongBanOptions);
+          setChucVuOptions((optionsRes.data as any).chucVuOptions);
+          setPhongBanOptions((optionsRes.data as any).phongBanOptions);
         }
       } catch (error) {
         console.error("Lỗi tải dữ liệu ban đầu:", error);
@@ -168,9 +168,9 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
             className="flex flex-col flex-1 overflow-hidden"
           >
             <div className="flex-1 overflow-y-auto relative px-6 py-4">
-              <Tabs 
-                value={activeTab} 
-                onValueChange={setActiveTab} 
+              <Tabs
+                value={activeTab}
+                onValueChange={setActiveTab}
                 className="w-full"
               >
                 <TabsList className="grid w-full grid-cols-3 mb-6 sticky top-0 z-10 bg-white shadow-sm border">
@@ -274,6 +274,8 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 captionLayout="dropdown"
+                                fromYear={1900}
+                                toYear={new Date().getFullYear()}
                               />
                             </PopoverContent>
                           </Popover>
@@ -348,6 +350,8 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 captionLayout="dropdown"
+                                fromYear={1900}
+                                toYear={new Date().getFullYear()}
                               />
                             </PopoverContent>
                           </Popover>
@@ -399,6 +403,8 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 captionLayout="dropdown"
+                                fromYear={new Date().getFullYear() - 10}
+                                toYear={new Date().getFullYear() + 10}
                               />
                             </PopoverContent>
                           </Popover>
@@ -561,6 +567,8 @@ export function AddEmployeeSheet({ open, onOpenChange, onSuccess }: AddEmployeeS
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 captionLayout="dropdown"
+                                fromYear={2000}
+                                toYear={new Date().getFullYear() + 10}
                               />
                             </PopoverContent>
                           </Popover>

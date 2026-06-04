@@ -104,9 +104,9 @@ export function AddKeHoachSheet({ open, onOpenChange, userId = "system" }: AddKe
         const newOptions = await getKeHoachFormOptions();
         if (newOptions.success) setOptions(newOptions.data);
         setIsLienHeModalOpen(false);
-        form.setValue("ID_LH", res.data.ID_LH);
+        form.setValue("ID_LH", (res.data as any).ID_LH);
       } else {
-        toast.error(res.message);
+        toast.error(res.error);
       }
     });
   };
@@ -121,9 +121,9 @@ export function AddKeHoachSheet({ open, onOpenChange, userId = "system" }: AddKe
         const newOptions = await getKeHoachFormOptions();
         if (newOptions.success) setOptions(newOptions.data);
         setIsDaiDienModalOpen(false);
-        form.setValue("ID_DD", res.data.ID_DD);
+        form.setValue("ID_DD", (res.data as any).ID_DD);
       } else {
-        toast.error(res.message);
+        toast.error(res.error);
       }
     });
   };

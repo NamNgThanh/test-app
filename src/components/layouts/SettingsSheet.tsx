@@ -94,8 +94,8 @@ function ChucVuManager() {
   const fetchItems = async () => {
     setLoading(true);
     const res = await getDanhMucChucVu();
-    if (res.success && res.data) {
-      setItems(res.data as any[]);
+    if (res.success) {
+      if (res.data) setItems(res.data as any[]);
     } else {
       toast.error(res.error);
     }
@@ -220,8 +220,8 @@ function PhongBanManager() {
   const fetchItems = async () => {
     setLoading(true);
     const res = await getDanhMucPhongBan();
-    if (res.success && res.data) {
-      setItems(res.data as any[]);
+    if (res.success) {
+      if (res.data) setItems(res.data as any[]);
     } else {
       toast.error(res.error);
     }
@@ -346,8 +346,8 @@ function NguonKhManager() {
   const fetchItems = async () => {
     setLoading(true);
     const res = await getNguonKhachHang();
-    if (res.success && res.data) {
-      setItems(res.data as any[]);
+    if (res.success) {
+      if (res.data) setItems(res.data as any[]);
     } else {
       toast.error(res.error);
     }
@@ -473,8 +473,8 @@ function KqCskhManager() {
   const fetchItems = async () => {
     setLoading(true);
     const res = await getKqCskh();
-    if (res.success && res.data) {
-      setItems(res.data as any[]);
+    if (res.success) {
+      if (res.data) setItems(res.data as any[]);
     } else {
       toast.error(res.error);
     }
