@@ -63,24 +63,26 @@ export const ActionsCell = ({
   return (
     <TooltipProvider delayDuration={200}>
       <div className="flex items-center justify-center gap-1">
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-full text-slate-600 hover:text-slate-600 hover:bg-slate-100"
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpenDetail(employee);
-              }}
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>Thay đổi thông tin</p>
-          </TooltipContent>
-        </Tooltip>
+        {employee.TRANG_THAI !== "NGHI_VIEC" && (
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 rounded-full text-slate-600 hover:text-slate-600 hover:bg-slate-100"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenDetail(employee);
+                }}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Thay đổi thông tin</p>
+            </TooltipContent>
+          </Tooltip>
+        )}
 
         {employee.TRANG_THAI !== "NGHI_VIEC" && (
           <Tooltip>
@@ -124,7 +126,7 @@ export const ActionsCell = ({
       </div>
 
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận xóa nhân viên</AlertDialogTitle>
             <AlertDialogDescription>
@@ -147,7 +149,7 @@ export const ActionsCell = ({
       </AlertDialog>
 
       <AlertDialog open={showTerminateDialog} onOpenChange={setShowTerminateDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
           <AlertDialogHeader>
             <AlertDialogTitle>Xác nhận cho thôi việc</AlertDialogTitle>
             <AlertDialogDescription>

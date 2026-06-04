@@ -198,10 +198,6 @@ export const EmployeeBoard = ({ initialData, counts, currentStatus }: EmployeeBo
         columns={columns}
         data={initialData}
         isLoading={isPending}
-        onRowClick={(employee) => {
-          setSelectedEmployee(employee);
-          setIsDetailOpen(true);
-        }}
       />
 
       <EditEmployeeSheet 
