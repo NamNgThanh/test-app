@@ -14,6 +14,11 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
 
   const currentStatus = (resolvedParams.status as TRANG_THAI_LAM_VIEC | "TAT_CA") || "TAT_CA";
   const currentSearch = (typeof resolvedParams.search === 'string' ? resolvedParams.search.toLowerCase() : "");
+  const startDateStr = resolvedParams.startDate as string | undefined;
+  const endDateStr = resolvedParams.endDate as string | undefined;
+  // Parse as local Vietnam time (GMT+7) instead of UTC to avoid off-by-1 day bugs
+  const startDate = startDateStr ? new Date(`${startDateStr}T00:00:00+07:00`) : null;
+  const endDate = endDateStr ? new Date(`${endDateStr}T23:59:59+07:00`) : null;
   const result = await getAllEmployees();
 
   if (!result.success) {
@@ -27,14 +32,29 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
 
   const allEmployees = result.data || [];
 
+  const dateFilteredEmployees = allEmployees.filter((e: EmployeePublic) => {
+    if (!startDate && !endDate) return true;
+    
+    const empDateStr = e.NGAY_CHINH_THUC || e.NGAY_THU_VIEC;
+    if (!empDateStr) return false;
+    
+    const empDate = new Date(empDateStr);
+    
+    if (startDate && empDate < startDate) return false;
+    
+    if (endDate && empDate > endDate) return false;
+    
+    return true;
+  });
+
   const counts = {
-    TAT_CA: allEmployees.length,
-    DANG_LAM_VIEC: allEmployees.filter((e: EmployeePublic) => e.TRANG_THAI === "DANG_LAM_VIEC").length,
-    THU_VIEC: allEmployees.filter((e: EmployeePublic) => e.TRANG_THAI === "THU_VIEC").length,
-    NGHI_VIEC: allEmployees.filter((e: EmployeePublic) => e.TRANG_THAI === "NGHI_VIEC").length,
+    TAT_CA: dateFilteredEmployees.length,
+    DANG_LAM_VIEC: dateFilteredEmployees.filter((e: EmployeePublic) => e.TRANG_THAI === "DANG_LAM_VIEC").length,
+    THU_VIEC: dateFilteredEmployees.filter((e: EmployeePublic) => e.TRANG_THAI === "THU_VIEC").length,
+    NGHI_VIEC: dateFilteredEmployees.filter((e: EmployeePublic) => e.TRANG_THAI === "NGHI_VIEC").length,
   };
 
-  const filteredEmployees = allEmployees.filter((e: EmployeePublic) => {
+  const filteredEmployees = dateFilteredEmployees.filter((e: EmployeePublic) => {
     const matchesStatus = currentStatus === "TAT_CA" || e.TRANG_THAI === currentStatus;
 
     const matchesSearch =
@@ -44,7 +64,7 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
       (e.USER_NAME?.toLowerCase().includes(currentSearch) ?? false);
 
     return matchesStatus && matchesSearch;
-  })
+  });
 
   return (
     <div className="space-y-3 p-2">

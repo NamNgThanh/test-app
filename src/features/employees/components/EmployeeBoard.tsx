@@ -4,9 +4,15 @@ import { EmployeePublic } from "../action";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState, useTransition } from "react";
 import { getColumns } from "./columns";
-import { FilterOption, StatusFilterBar } from "@/components/ui/status-filter-bar";
-import { UserRoundCheck, UserRoundX, Users } from "lucide-react";
+import { FilterOption } from "@/components/ui/status-filter-bar";
+import { UserRoundCheck, UserRoundX, Users, Calendar as CalendarIcon, X } from "lucide-react";
 import { DataTable } from "@/components/ui/data-table";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { format } from "date-fns";
+import { DateRange } from "react-day-picker";
+import { cn } from "@/lib/utils";
 
 interface EmployeeBoardProps {
   initialData: EmployeePublic[];
@@ -23,6 +29,38 @@ export const EmployeeBoard = ({ initialData, counts, currentStatus }: EmployeeBo
   const [activeStatus, setActiveStatus] = useState(currentStatus);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeePublic | null>(null);
+
+  const [date, setDate] = useState<DateRange | undefined>({
+    from: searchParams.get('startDate') ? new Date(searchParams.get('startDate') as string) : undefined,
+    to: searchParams.get('endDate') ? new Date(searchParams.get('endDate') as string) : undefined,
+  });
+
+  const handleDateChange = (newDate: DateRange | undefined) => {
+    setDate(newDate);
+    const params = new URLSearchParams(searchParams.toString());
+    
+    if (newDate?.from) {
+      params.set("startDate", format(newDate.from, "yyyy-MM-dd"));
+    } else {
+      params.delete("startDate");
+    }
+    
+    if (newDate?.to) {
+      params.set("endDate", format(newDate.to, "yyyy-MM-dd"));
+    } else {
+      params.delete("endDate");
+    }
+
+    startTransition(() => {
+      router.push(`${pathname}?${params.toString()}`);
+    });
+  }
+
+  const clearDateFilter = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    handleDateChange(undefined);
+  }
 
   useEffect(() => {
     setActiveStatus(currentStatus);
@@ -96,6 +134,63 @@ export const EmployeeBoard = ({ initialData, counts, currentStatus }: EmployeeBo
             </div>
           );
         })}
+      </div>
+
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold text-slate-800">Danh sách nhân sự</h3>
+        
+        <div className="flex items-center gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-[260px] justify-start text-left font-normal bg-white",
+                  !date && "text-slate-500"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4 text-orange-500" />
+                <span className="flex-1">
+                  {date?.from ? (
+                    date.to ? (
+                      <>
+                        {format(date.from, "dd/MM/yyyy")} - {format(date.to, "dd/MM/yyyy")}
+                      </>
+                    ) : (
+                      format(date.from, "dd/MM/yyyy")
+                    )
+                  ) : (
+                    <span>Lọc theo ngày vào làm</span>
+                  )}
+                </span>
+                {date?.from && (
+                  <div 
+                    role="button"
+                    tabIndex={0}
+                    className="ml-2 h-4 w-4 opacity-50 hover:opacity-100 z-10 flex items-center justify-center"
+                    onClick={clearDateFilter}
+                    onPointerDown={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                    }}
+                  >
+                    <X className="h-full w-full" />
+                  </div>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={date?.from}
+                selected={date}
+                onSelect={handleDateChange}
+                numberOfMonths={2}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       <DataTable 
