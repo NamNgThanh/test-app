@@ -107,7 +107,7 @@ export const AppSidebar = ({ isAdmin }: AppSidebarProps) => {
                   : "text-stone-500 hover:bg-stone-100/80 hover:text-stone-900 rounded-xl font-medium transition-all duration-200"
               }
             >
-              <Link href="/" className="flex items-center gap-3 w-full h-10 px-3">
+              <Link href="/" prefetch={true} className="flex items-center gap-3 w-full h-10 px-3">
                 <LayoutDashboard className="size-4 shrink-0" />
                 <span className="group-data-[collapsible=icon]:hidden text-[13px]">Dashboard</span>
               </Link>
@@ -163,7 +163,7 @@ export const AppSidebar = ({ isAdmin }: AppSidebarProps) => {
                                 }
                               `}
                             >
-                              <Link href={item.url} className="flex items-center gap-3 w-full px-3 py-2.5 relative">
+                              <Link href={item.url} prefetch={true} className="flex items-center gap-3 w-full px-3 py-2.5 relative">
                                 {item.icon ? (
                                   <item.icon className={`size-4 shrink-0 transition-transform duration-300 ${itemActive ? "text-orange-600 scale-110" : "text-stone-400 group-hover:text-stone-600"}`} />
                                 ) : (
