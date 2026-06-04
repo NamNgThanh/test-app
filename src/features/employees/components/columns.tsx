@@ -11,7 +11,8 @@ export const getColumns = (
   onOpenDetail: (employee: EmployeePublic) => void,
 ): ColumnDef<EmployeePublic>[] => [
     {
-      accessorKey: "code",
+      id: "code",
+      accessorFn: (row) => row.MA_NV,
       header: "Mã NV",
       cell: ({ row }) => (
         <div className="flex">
@@ -23,6 +24,7 @@ export const getColumns = (
     },
     {
       accessorKey: "info",
+      enableSorting: false,
       header: "Nhân viên",
       cell: ({ row }) => {
         const employee = row.original;
@@ -50,6 +52,7 @@ export const getColumns = (
     },
     {
       accessorKey: "phone",
+      enableSorting: false,
       header: "SĐT",
       cell: ({ row }) => (
         <div className="flex flex-col">
@@ -86,6 +89,7 @@ export const getColumns = (
     },
     {
       accessorKey: "email",
+      enableSorting: false,
       header: "Email",
       cell: ({ row }) => (
         <div className="flex flex-col">
@@ -97,6 +101,7 @@ export const getColumns = (
     },
     {
       accessorKey: "CHUC_VU",
+      enableSorting: false,
       header: "Chức vụ",
       cell: ({ row }) => {
         const chucVu = row.original.CHUC_VU;
@@ -124,7 +129,8 @@ export const getColumns = (
       },
     },
     {
-      accessorKey: "joinDate",
+      id: "joinDate",
+      accessorFn: (row) => row.NGAY_CHINH_THUC ? new Date(row.NGAY_CHINH_THUC).getTime() : (row.NGAY_THU_VIEC ? new Date(row.NGAY_THU_VIEC).getTime() : 0),
       header: "Ngày vào làm",
       cell: ({ row }) => (
         <div className="flex">
@@ -135,7 +141,8 @@ export const getColumns = (
       ),
     },
     {
-      accessorKey: "type",
+      id: "type",
+      accessorFn: (row) => row.HINH_THUC,
       header: "Hình thức làm việc",
       cell: ({ row }) => {
         const type = row.original.HINH_THUC;
@@ -169,7 +176,8 @@ export const getColumns = (
       },
     },
     {
-      accessorKey: "status",
+      id: "status",
+      accessorFn: (row) => row.TRANG_THAI,
       header: "Trạng thái",
       cell: ({ row }) => {
         const status = row.original.TRANG_THAI;
@@ -204,6 +212,7 @@ export const getColumns = (
     },
     {
       id: "actions",
+      enableSorting: false,
       cell: ({ row }) => (
         <ActionsCell employee={row.original} onOpenDetail={onOpenDetail} />
       ),
