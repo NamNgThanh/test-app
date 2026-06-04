@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { DateRange } from "react-day-picker";
 import { cn } from "@/lib/utils";
+import { EditEmployeeSheet } from "./EditEmployeeSheet";
 
 interface EmployeeBoardProps {
   initialData: EmployeePublic[];
@@ -201,6 +202,12 @@ export const EmployeeBoard = ({ initialData, counts, currentStatus }: EmployeeBo
           setSelectedEmployee(employee);
           setIsDetailOpen(true);
         }}
+      />
+
+      <EditEmployeeSheet 
+        open={isDetailOpen} 
+        onOpenChange={setIsDetailOpen} 
+        employee={selectedEmployee} 
       />
     </>
   )

@@ -7,5 +7,11 @@ export const createSuccessResponse = <T>(data: T): ResultResponse<T> => {
 };
 
 export const createErrorResponse = <T>(error: string, details?: unknown): ResultResponse<T> => {
-  return { success: false, error, details };
+  // Sanitize error object to prevent 1.1MB Prisma errors from being sent to the client
+  let sanitizedDetails = details;
+  if (details instanceof Error) {
+    sanitizedDetails = details.message;
+  }
+  
+  return { success: false, error, details: sanitizedDetails };
 }

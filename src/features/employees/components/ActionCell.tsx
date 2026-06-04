@@ -4,7 +4,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { EmployeePublic } from "../action";
-import { Eye, Trash2, UserMinus } from "lucide-react";
+import { Pencil, Trash2, UserMinus } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { deleteEmployee, terminateEmployee } from "../action";
@@ -71,11 +71,11 @@ export const ActionsCell = ({
               className="h-8 w-8 rounded-full text-slate-600 hover:text-slate-600 hover:bg-slate-100"
               onClick={() => onOpenDetail(employee)}
             >
-              <Eye className="h-4 w-4" />
+              <Pencil className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Xem chi tiết</p>
+            <p>Thay đổi thông tin</p>
           </TooltipContent>
         </Tooltip>
 

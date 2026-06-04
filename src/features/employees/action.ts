@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
 import { createErrorResponse, createSuccessResponse, ResultResponse } from "@/types/response";
 import { Prisma } from "@prisma/client";
-import { EmployeeFormData } from "./schema";
+import { EmployeeFormData, UpdateEmployeeFormData } from "./schema";
 import { revalidatePath } from "next/cache";
 
 const EMPLOYEES_PATH = "/employees";
@@ -135,6 +135,54 @@ export const createEmployee = async (
     }
 
     return createErrorResponse("Lỗi khi tạo nhân viên mới", error);
+  }
+};
+
+export const updateEmployee = async (
+  id: string,
+  employeeData: UpdateEmployeeFormData
+): Promise<ResultResponse<EmployeePublic>> => {
+  try {
+    const { NGAY_NHAN_VIEC, ...data } = employeeData;
+
+    const payload = {
+      ...data,
+      NGAY_SINH: toDate(data.NGAY_SINH),
+      NGAY_CAP_CCCD: toDate(data.NGAY_CAP_CCCD),
+      NGAY_HET_HAN_CCCD: toDate(data.NGAY_HET_HAN_CCCD),
+      NGAY_CHINH_THUC:
+        employeeData.TRANG_THAI === "DANG_LAM_VIEC" ? toDate(NGAY_NHAN_VIEC) : null,
+      NGAY_THU_VIEC: employeeData.TRANG_THAI === "THU_VIEC" ? toDate(NGAY_NHAN_VIEC) : null,
+    };
+
+    // Lưu danh mục mới nếu cần
+    if (payload.CHUC_VU) {
+      await prisma.dANH_MUC_CHUC_VU.upsert({
+        where: { TEN_CV: payload.CHUC_VU },
+        update: {},
+        create: { TEN_CV: payload.CHUC_VU },
+      });
+    }
+
+    if (payload.PHONGBAN) {
+      await prisma.dANH_MUC_PHONG_BAN.upsert({
+        where: { TEN_PB: payload.PHONGBAN },
+        update: {},
+        create: { TEN_PB: payload.PHONGBAN },
+      });
+    }
+
+    const updatedEmployee = await prisma.nHAN_VIEN.update({
+      where: { MA_NV: id },
+      data: payload,
+      omit: employeePublicSelect,
+    });
+    
+    revalidatePath(EMPLOYEES_PATH);
+    return createSuccessResponse(updatedEmployee);
+  } catch (error) {
+    console.error("updateEmployee failed:", error);
+    return createErrorResponse("Lỗi khi cập nhật thông tin nhân viên", error);
   }
 };
 

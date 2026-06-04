@@ -9,7 +9,7 @@ const accountFieldsSchema = z.object({
   XAC_NHAN_MAT_KHAU: z.string().optional(),
 });
 
-export const createNhanVienSchema = z
+export const baseNhanVienSchema = z
   .object({
     MA_NV: z.string(),
     HO_VA_TEN: z
@@ -52,6 +52,7 @@ export const createNhanVienSchema = z
     CHUC_VU: z.string().min(1, "Vui lòng chọn hoặc nhập chức vụ"),
     PHONGBAN: z.string().min(1, "Vui lòng chọn hoặc nhập phòng ban"),
   })
+export const createNhanVienSchema = baseNhanVienSchema
   .merge(accountFieldsSchema)
   .superRefine((data, ctx) => {
     if (!data.TAO_TAI_KHOAN) return;
@@ -88,4 +89,7 @@ export const createNhanVienSchema = z
     }
   });
 
+export const updateNhanVienSchema = baseNhanVienSchema;
+
 export type EmployeeFormData = z.infer<typeof createNhanVienSchema>;
+export type UpdateEmployeeFormData = z.infer<typeof updateNhanVienSchema>;
