@@ -69,7 +69,10 @@ export const ActionsCell = ({
               variant="ghost"
               size="icon"
               className="h-8 w-8 rounded-full text-slate-600 hover:text-slate-600 hover:bg-slate-100"
-              onClick={() => onOpenDetail(employee)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenDetail(employee);
+              }}
             >
               <Pencil className="h-4 w-4" />
             </Button>
@@ -86,7 +89,10 @@ export const ActionsCell = ({
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 rounded-full text-orange-500 hover:text-orange-500 hover:bg-orange-50"
-                onClick={() => setShowTerminateDialog(true)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowTerminateDialog(true);
+                }}
               >
                 <UserMinus className="h-4 w-4" />
               </Button>
@@ -102,7 +108,10 @@ export const ActionsCell = ({
               variant="ghost"
               size="icon"
               className="h-8 w-8 rounded-full text-red-500 hover:text-red-500 hover:bg-red-50"
-              onClick={() => setShowDeleteDialog(true)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowDeleteDialog(true);
+              }}
             >
               <Trash2 className="h-4 w-4" />
             </Button>
