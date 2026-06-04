@@ -29,7 +29,6 @@ export const ActionsCell = ({
 
       if (result.success) {
         toast.success("Xóa nhân viên thành công");
-        window.location.reload();
       } else {
         toast.error("Có lỗi xảy ra khi xóa nhân viên");
       }
@@ -49,7 +48,6 @@ export const ActionsCell = ({
 
       if (result.success) {
         toast.success("Đã chuyển trạng thái nhân viên thành Nghỉ việc");
-        window.location.reload();
       } else {
         toast.error("Có lỗi xảy ra khi cho thôi việc");
       }
