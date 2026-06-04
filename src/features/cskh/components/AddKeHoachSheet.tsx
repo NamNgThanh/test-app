@@ -88,8 +88,6 @@ export function AddKeHoachSheet({ open, onOpenChange, userId = "system" }: AddKe
   }, [open]);
 
   const selectedKh = form.watch("ID_KH");
-  const selectedKq = form.watch("ID_KQ");
-  const isTuChoiSelected = options?.kqCsOptions.find((kq) => kq.ID_KQ === selectedKq)?.IS_TU_CHOI === true;
   const filteredNguoiLienHe = options?.nguoiLienHeOptions.filter((lh) => !selectedKh || lh.ID_KH === selectedKh) || [];
   const filteredNguoiDaiDien = options?.nguoiDaiDienOptions.filter((dd) => !selectedKh || dd.ID_KH === selectedKh) || [];
 
@@ -439,58 +437,6 @@ export function AddKeHoachSheet({ open, onOpenChange, userId = "system" }: AddKe
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
-              name="ID_KQ"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Kết quả CSKH</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Chọn kết quả CSKH (Tuỳ chọn)" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {options?.kqCsOptions.map((item) => (
-                        <SelectItem key={item.ID_KQ} value={item.ID_KQ}>
-                          {item.KET_QUA}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {isTuChoiSelected && (
-              <FormField
-                control={form.control}
-                name="ID_LY_DO_TC"
-                render={({ field }) => (
-                  <FormItem className="animate-in fade-in slide-in-from-top-2 duration-300 bg-red-50 p-4 rounded-lg border border-red-100">
-                    <FormLabel className="text-red-800">Lý do từ chối *</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="bg-white border-red-200 focus:ring-red-400">
-                          <SelectValue placeholder="Vui lòng chọn lý do từ chối" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {options?.lyDoTuChoiOptions.map((item) => (
-                          <SelectItem key={item.ID_LY_DO} value={item.ID_LY_DO}>
-                            {item.LY_DO}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
 
             <FormField
               control={form.control}

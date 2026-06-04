@@ -40,6 +40,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   isLoading?: boolean;
   onRowClick?: (row: TData) => void;
+  isRowClickable?: (row: TData) => boolean;
   pageCount?: number;
   pagination?: PaginationState;
   onPaginationChange?: OnChangeFn<PaginationState>;
@@ -47,7 +48,7 @@ interface DataTableProps<TData, TValue> {
   onSortingChange?: OnChangeFn<SortingState>;
   emptyState?: React.ReactNode;
   headerClassName?: string;
-  rowClassName?: string;
+  rowClassName?: string | ((row: TData) => string);
   renderSubComponent?: (props: { row: any }) => React.ReactNode;
 }
 
@@ -56,6 +57,7 @@ export function DataTable<TData, TValue>({
   data,
   isLoading,
   onRowClick,
+  isRowClickable,
   pageCount,
   pagination,
   onPaginationChange,
@@ -168,10 +170,14 @@ export function DataTable<TData, TValue>({
                       data-state={row.getIsSelected() && "selected"}
                       className={cn(
                         "transition-colors border-b border-slate-50 last:border-none",
-                        onRowClick ? "cursor-pointer hover:bg-[#7C3AED]/5" : "",
-                        rowClassName
+                        onRowClick && (!isRowClickable || isRowClickable(row.original)) ? "cursor-pointer hover:bg-[#7C3AED]/5" : "",
+                        typeof rowClassName === "function" ? rowClassName(row.original) : rowClassName
                       )}
-                      onClick={() => onRowClick?.(row.original)}
+                      onClick={() => {
+                        if (onRowClick && (!isRowClickable || isRowClickable(row.original))) {
+                          onRowClick(row.original);
+                        }
+                      }}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id} className="py-4 align-middle whitespace-nowrap min-w-max">
