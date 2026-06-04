@@ -47,8 +47,7 @@ export const LoginForm = () => {
         toast.success("Đăng nhập thành công", {
           description: "Chào mừng bạn đã trở lại.",
         });
-        router.push("/");
-        router.refresh();
+        window.location.href = "/";
       }
     } catch {
       toast.error("Có lỗi xảy ra", {
