@@ -60,3 +60,15 @@ export const createKeHoachCSKHSchema = z.object({
 });
 
 export type KeHoachCSKHFormData = z.infer<typeof createKeHoachCSKHSchema>;
+
+export const updateKeHoachCSKHSchema = createKeHoachCSKHSchema.superRefine((data, ctx) => {
+  if (data.TRANG_THAI === "HOAN_THANH" && !data.ID_KQ) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["ID_KQ"],
+      message: "Vui lòng chọn kết quả CSKH khi hoàn thành",
+    });
+  }
+});
+
+export type UpdateKeHoachCSKHFormData = z.infer<typeof updateKeHoachCSKHSchema>;

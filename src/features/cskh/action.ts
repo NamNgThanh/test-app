@@ -4,7 +4,7 @@ import { LOAI_NHOM_KH, PHAN_LOAI_CSKH, Prisma, TRANG_THAI_CSKH, PHAN_LOAI_CHAM_S
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { createErrorResponse, createSuccessResponse, ResultResponse } from "@/types/response";
-import { KHTNFormData, KeHoachCSKHFormData } from "./schema";
+import { KHTNFormData, KeHoachCSKHFormData, UpdateKeHoachCSKHFormData } from "./schema";
 
 const CSKH_PATH = "/cskh";
 
@@ -331,6 +331,45 @@ export const getKeHoachFormOptions = async (): Promise<ResultResponse<KeHoachFor
   } catch (error) {
     console.error("Lỗi khi tải danh mục Kế Hoạch:", error);
     return createErrorResponse("Lỗi khi tải danh mục Kế Hoạch", error);
+  }
+};
+
+export const updateKeHoachCSKH = async (id: string, payload: UpdateKeHoachCSKHFormData, userId: string): Promise<ResultResponse<KH_CSKHPublic>> => {
+  try {
+    const dataToUpdate: any = {
+      ID_KH: payload.ID_KH || null,
+      ID_LH: payload.ID_LH || null,
+      ID_DD: payload.ID_DD || null,
+      TG_TU: payload.TG_TU,
+      TG_DEN: payload.TG_DEN,
+      ID_LCS: payload.ID_LCS,
+      HINH_THUC: payload.HINH_THUC,
+      DIA_DIEM: payload.DIA_DIEM || null,
+      NGUOI_CHAM_SOC: payload.NGUOI_CHAM_SOC || null,
+      NOI_DUNG_TD: payload.NOI_DUNG_TD || null,
+      GHI_CHU_NHU_CAU: payload.GHI_CHU_NHU_CAU || null,
+      NGAY_CS_TT: payload.NGAY_CS_TT || null,
+      ID_KQ: payload.ID_KQ || null,
+      XEP_LOAI_CS: payload.XEP_LOAI_CS || null,
+      ID_LY_DO_TC: payload.ID_LY_DO_TC || null,
+      TRANG_THAI: payload.TRANG_THAI,
+    };
+
+    if (payload.TRANG_THAI === "HOAN_THANH") {
+      dataToUpdate.NGAY_CS_TT = new Date();
+    }
+
+    const updatedPlan = await prisma.kH_CSKH.update({
+      where: { ID_CSKH: id },
+      data: dataToUpdate,
+      include: { KHTN: true, NGUOI_LIEN_HE: true, LOAI_CHAM_SOC: true, KQ_CS: true, LY_DO_TU_CHOI: true },
+    });
+
+    revalidatePath("/cskh");
+    return createSuccessResponse(updatedPlan as KH_CSKHPublic);
+  } catch (error) {
+    console.error("Lỗi khi cập nhật kế hoạch:", error);
+    return createErrorResponse("Lỗi hệ thống khi cập nhật kế hoạch", error);
   }
 };
 
