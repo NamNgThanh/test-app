@@ -140,6 +140,23 @@ export const deleteEmployee = async (id: string): Promise<ResultResponse<null>> 
   }
 };
 
+export const terminateEmployee = async (id: string): Promise<ResultResponse<null>> => {
+  try {
+    await prisma.nHAN_VIEN.update({
+      where: {
+        MA_NV: id,
+      },
+      data: {
+        TRANG_THAI: "NGHI_VIEC",
+      }
+    });
+    revalidatePath(EMPLOYEES_PATH);
+    return createSuccessResponse(null);
+  } catch (error) {
+    return createErrorResponse("Lỗi khi cập nhật trạng thái nhân viên", error);
+  }
+};
+
 export const getEmployeeFormOptions = async () => {
   try {
     const [chucVuList, phongBanList] = await Promise.all([
