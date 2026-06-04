@@ -95,9 +95,9 @@ function ChucVuManager() {
     setLoading(true);
     const res = await getDanhMucChucVu();
     if (res.success && res.data) {
-      setItems(res.data);
+      setItems(res.data as any[]);
     } else {
-      toast.error(res.message);
+      toast.error(res.error);
     }
     setLoading(false);
   };
@@ -115,7 +115,7 @@ function ChucVuManager() {
         setNewValue("");
         fetchItems();
       } else {
-        toast.error(res.message);
+        toast.error(res.error);
       }
     });
   };
@@ -126,7 +126,7 @@ function ChucVuManager() {
       if (res.success) {
         setItems(prev => prev.map(item => item.ID_CV === id ? { ...item, HIEU_LUC: checked } : item));
       } else {
-        toast.error(res.message);
+        toast.error(res.error);
       }
     });
   };
@@ -138,7 +138,7 @@ function ChucVuManager() {
         toast.success("Xoá thành công");
         fetchItems();
       } else {
-        toast.error(res.message);
+        toast.error(res.error);
       }
     });
   };
@@ -221,9 +221,9 @@ function PhongBanManager() {
     setLoading(true);
     const res = await getDanhMucPhongBan();
     if (res.success && res.data) {
-      setItems(res.data);
+      setItems(res.data as any[]);
     } else {
-      toast.error(res.message);
+      toast.error(res.error);
     }
     setLoading(false);
   };
@@ -241,7 +241,7 @@ function PhongBanManager() {
         setNewValue("");
         fetchItems();
       } else {
-        toast.error(res.message);
+        toast.error(res.error);
       }
     });
   };
@@ -252,7 +252,7 @@ function PhongBanManager() {
       if (res.success) {
         setItems(prev => prev.map(item => item.ID_PB === id ? { ...item, HIEU_LUC: checked } : item));
       } else {
-        toast.error(res.message);
+        toast.error(res.error);
       }
     });
   };
@@ -264,7 +264,7 @@ function PhongBanManager() {
         toast.success("Xoá thành công");
         fetchItems();
       } else {
-        toast.error(res.message);
+        toast.error(res.error);
       }
     });
   };
@@ -347,9 +347,9 @@ function NguonKhManager() {
     setLoading(true);
     const res = await getNguonKhachHang();
     if (res.success && res.data) {
-      setItems(res.data);
+      setItems(res.data as any[]);
     } else {
-      toast.error(res.message);
+      toast.error(res.error);
     }
     setLoading(false);
   };
@@ -367,7 +367,7 @@ function NguonKhManager() {
         setNewValue("");
         fetchItems();
       } else {
-        toast.error(res.message);
+        toast.error(res.error);
       }
     });
   };
@@ -378,7 +378,7 @@ function NguonKhManager() {
       if (res.success) {
         setItems(prev => prev.map(item => item.ID_NGUON === id ? { ...item, HIEU_LUC: checked } : item));
       } else {
-        toast.error(res.message);
+        toast.error(res.error);
       }
     });
   };
@@ -390,7 +390,7 @@ function NguonKhManager() {
         toast.success("Xoá thành công");
         fetchItems();
       } else {
-        toast.error(res.message);
+        toast.error(res.error);
       }
     });
   };
@@ -474,9 +474,9 @@ function KqCskhManager() {
     setLoading(true);
     const res = await getKqCskh();
     if (res.success && res.data) {
-      setItems(res.data);
+      setItems(res.data as any[]);
     } else {
-      toast.error(res.message);
+      toast.error(res.error);
     }
     setLoading(false);
   };
@@ -495,7 +495,7 @@ function KqCskhManager() {
         setIsTuChoi(false);
         fetchItems();
       } else {
-        toast.error(res.message);
+        toast.error(res.error);
       }
     });
   };
@@ -506,7 +506,7 @@ function KqCskhManager() {
       if (res.success) {
         fetchItems();
       } else {
-        toast.error(res.message);
+        toast.error(res.error);
       }
     });
   };
@@ -518,7 +518,7 @@ function KqCskhManager() {
         toast.success("Đã xoá kết quả CSKH");
         fetchItems();
       } else {
-        toast.error(res.message);
+        toast.error(res.error);
       }
     });
   };
