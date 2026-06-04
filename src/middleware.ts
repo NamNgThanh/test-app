@@ -1,7 +1,14 @@
 import NextAuth from "next-auth";
 import { authConfig } from "./lib/auth.config";
 
-export default NextAuth(authConfig).auth;
+import { NextResponse } from "next/server";
+
+export default NextAuth(authConfig).auth((req) => {
+  // Bỏ callbackUrl rườm rà, nếu chưa đăng nhập thì trỏ thẳng về /login trơn tru
+  if (!req.auth) {
+    return NextResponse.redirect(new URL("/login", req.nextUrl));
+  }
+});
 
 export const config = {
   // Bắt buộc xác thực cho tất cả các route, ngoại trừ login và file tĩnh

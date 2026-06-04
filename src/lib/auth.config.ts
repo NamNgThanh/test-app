@@ -58,7 +58,7 @@ export const authConfig = {
       return session;
     },
     authorized({ auth }) {
-      return !!auth?.user;
+      return true; // Để middleware tự xử lý redirect thay vì NextAuth mặc định
     },
   },
 } satisfies NextAuthConfig;
