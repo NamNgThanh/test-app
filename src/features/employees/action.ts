@@ -33,8 +33,8 @@ async function buildCreatePayload(employeeData: EmployeeFormData) {
     NGAY_CHINH_THUC:
       employeeData.TRANG_THAI === "DANG_LAM_VIEC" ? toDate(NGAY_NHAN_VIEC) : null,
     NGAY_THU_VIEC: employeeData.TRANG_THAI === "THU_VIEC" ? toDate(NGAY_NHAN_VIEC) : null,
-    USER_NAME: null,
-    PASSWORD: null,
+    USER_NAME: undefined,
+    PASSWORD: undefined,
   };
 
   if (TAO_TAI_KHOAN && USER_NAME?.trim() && PASSWORD) {
@@ -46,8 +46,20 @@ async function buildCreatePayload(employeeData: EmployeeFormData) {
 }
 
 export async function getNextEmployeeCode() {
-  const count = await prisma.nHAN_VIEN.count();
-  return `NV${String(count + 1).padStart(3, "0")}`;
+  const lastEmployee = await prisma.nHAN_VIEN.findFirst({
+    orderBy: { MA_NV: "desc" },
+    select: { MA_NV: true },
+  });
+
+  if (!lastEmployee || !lastEmployee.MA_NV) {
+    return "NV001";
+  }
+
+  // Lấy ra phần số (ví dụ NV005 -> 5) và cộng thêm 1
+  const lastNumberStr = lastEmployee.MA_NV.replace(/\D/g, "");
+  const nextNumber = parseInt(lastNumberStr || "0", 10) + 1;
+
+  return `NV${String(nextNumber).padStart(3, "0")}`;
 }
 
 export const getAllEmployees = async (): Promise<ResultResponse<EmployeePublic[]>> => {
