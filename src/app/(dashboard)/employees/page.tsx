@@ -48,14 +48,16 @@ export default async function EmployeesPage({ searchParams }: EmployeesPageProps
   });
 
   const counts = {
-    TAT_CA: dateFilteredEmployees.length,
+    TAT_CA: dateFilteredEmployees.filter((e: EmployeePublic) => e.TRANG_THAI !== "NGHI_VIEC").length,
     DANG_LAM_VIEC: dateFilteredEmployees.filter((e: EmployeePublic) => e.TRANG_THAI === "DANG_LAM_VIEC").length,
     THU_VIEC: dateFilteredEmployees.filter((e: EmployeePublic) => e.TRANG_THAI === "THU_VIEC").length,
     NGHI_VIEC: dateFilteredEmployees.filter((e: EmployeePublic) => e.TRANG_THAI === "NGHI_VIEC").length,
   };
 
   const filteredEmployees = dateFilteredEmployees.filter((e: EmployeePublic) => {
-    const matchesStatus = currentStatus === "TAT_CA" || e.TRANG_THAI === currentStatus;
+    const matchesStatus = currentStatus === "TAT_CA" 
+      ? e.TRANG_THAI !== "NGHI_VIEC" 
+      : e.TRANG_THAI === currentStatus;
 
     const matchesSearch =
       e.HO_VA_TEN.toLowerCase().includes(currentSearch) ||
