@@ -5,8 +5,18 @@ import path from 'path';
 // Tạo cơ chế tự động reset session mỗi khi có bản build mới trên production
 const getNextAuthSecret = () => {
   if (process.env.NODE_ENV === "production") {
+    // 1. Vercel: Dùng mã Commit của Git (Thay đổi mỗi lần push code)
+    if (process.env.VERCEL_GIT_COMMIT_SHA) {
+      return `prod-secret-${process.env.VERCEL_GIT_COMMIT_SHA}`;
+    }
+    
+    // 2. Vercel: Dùng URL deployment nội bộ (Mỗi lần build có 1 URL riêng)
+    if (process.env.VERCEL_URL) {
+      return `prod-secret-${process.env.VERCEL_URL}`;
+    }
+
+    // 3. Môi trường Node.js truyền thống (VPS/Docker)
     try {
-      // Đọc BUILD_ID do Next.js sinh ra mỗi khi chạy `npm run build`
       const buildId = fs.readFileSync(path.join(process.cwd(), '.next', 'BUILD_ID'), 'utf8');
       return `prod-secret-${buildId.trim()}`;
     } catch (e) {
